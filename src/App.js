@@ -1,4 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { initializeApp } from "firebase/app";
+import { getFirestore, collection, addDoc, getDocs } from "firebase/firestore";
+
+// TODO: Dán đoạn config Firebase của bạn vào đây
+const firebaseConfig = {
+  apiKey: "AIzaSyBBnK4v8Vm64zXN7W2HYnRx19gKRuuFTcU",
+  authDomain: "ponv-tracker.firebaseapp.com",
+  projectId: "ponv-tracker",
+  storageBucket: "ponv-tracker.firebasestorage.app",
+  messagingSenderId: "295019782369",
+  appId: "1:295019782369:web:4309b3debefa6955c717a0"
+};
+
+// Khởi tạo Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 export default function App() {
   const [form, setForm] = useState({
@@ -15,6 +31,20 @@ export default function App() {
 
   const [records, setRecords] = useState([]);
 
+  // Lấy dữ liệu từ Firestore khi load trang
+  useEffect(() => {
+    fetchRecords();
+  }, []);
+
+  const fetchRecords = async () => {
+    const querySnapshot = await getDocs(collection(db, "ponv_records"));
+    let data = [];
+    querySnapshot.forEach((doc) => {
+      data.push(doc.data());
+    });
+    setRecords(data.reverse()); // mới nhất lên đầu
+  };
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setForm({
@@ -23,7 +53,7 @@ export default function App() {
     });
   };
 
-  const saveRecord = () => {
+  const saveRecord = async () => {
     if (!form.patientName) {
       alert("Vui lòng nhập tên bệnh nhân");
       return;
@@ -32,7 +62,8 @@ export default function App() {
       ...form,
       time: new Date().toLocaleString(),
     };
-    setRecords([newRecord, ...records]);
+    await addDoc(collection(db, "ponv_records"), newRecord);
+    fetchRecords();
     setForm({
       patientName: "",
       age: "",
@@ -49,6 +80,8 @@ export default function App() {
   return (
     <div style={{ padding: 20, fontFamily: "sans-serif", maxWidth: 800, margin: "0 auto" }}>
       <h1>Theo dõi Nôn, Buồn nôn sau mổ (PONV)</h1>
+
+      {/* Form nhập liệu */}
       <div style={{ marginBottom: 20, background: "#f9f9f9", padding: 15, borderRadius: 8 }}>
         <label>Họ tên bệnh nhân:</label>
         <input
@@ -140,6 +173,7 @@ export default function App() {
         </button>
       </div>
 
+      {/* Danh sách */}
       <h2>Danh sách bệnh nhân</h2>
       <table border="1" cellPadding="8" style={{ width: "100%", borderCollapse: "collapse" }}>
         <thead>
