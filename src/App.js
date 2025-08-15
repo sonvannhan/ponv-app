@@ -714,4 +714,4 @@ const styles = {
   tdLabel: { padding: "8px 8px", borderBottom: "1px solid #f1f5f9", fontWeight: 600, whiteSpace: "nowrap" },
   tdCenter: { padding: "8px 8px", borderBottom: "1px solid #f1f5f9", textAlign: "center" },
   cellInput: { width: "100%", padding: "8px 10px", border: "1px solid #e2e8f0", borderRadius: 8, outline: "none" }
-}
+};
