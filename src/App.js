@@ -183,6 +183,53 @@ function normalizeTimeInput(val) {
   return "";
 }
 
+// Format time value to "HH:MM" for export (handles strings, Dates, ISO datetimes, short forms)
+function formatTimeForExport(val) {
+  if (val === null || val === undefined || val === "") return "";
+  // Date object
+  if (val instanceof Date) {
+    const h = String(val.getHours()).padStart(2, "0");
+    const m = String(val.getMinutes()).padStart(2, "0");
+    return `${h}:${m}`;
+  }
+  // If already a string
+  if (typeof val === "string") {
+    const s = val.trim();
+    if (s === "") return "";
+    // already HH:MM
+    if (/^\d{1,2}:\d{1,2}$/.test(s)) {
+      // normalize parts and clamp
+      const parts = s.split(":");
+      const hh = String(Math.max(0, Math.min(23, parseInt(parts[0] || "0", 10)))).padStart(2, "0");
+      const mm = String(Math.max(0, Math.min(59, parseInt(parts[1] || "0", 10)))).padStart(2, "0");
+      return `${hh}:${mm}`;
+    }
+    // 4 digits like "0900"
+    if (/^\d{4}$/.test(s)) {
+      return formatTimeForExport(`${s.slice(0,2)}:${s.slice(2)}`);
+    }
+    // 3 digits like "930"
+    if (/^\d{3}$/.test(s)) {
+      return formatTimeForExport(`${s.slice(0,1).padStart(2,"0")}:${s.slice(1)}`);
+    }
+    // 1-2 digits => hour only
+    if (/^\d{1,2}$/.test(s)) {
+      return `${String(parseInt(s,10)).padStart(2,"0")}:00`;
+    }
+    // ISO datetime or other date string -> try Date parse
+    if (s.includes("T") || s.includes("-")) {
+      const d = new Date(s);
+      if (!isNaN(d)) {
+        return formatTimeForExport(d);
+      }
+    }
+    // fallback: try normalizeTimeInput for flexible parsing (it returns "" if can't)
+    const tried = normalizeTimeInput(s);
+    return tried || s;
+  }
+  return "";
+}
+
 /* ================= UI small components ================= */
 const Card = ({ title, children }) => (
   <div style={styles.card}>
@@ -271,28 +318,45 @@ export default function App() {
   }
 
   async function handleSave(e) {
-    if (e && e.preventDefault) e.preventDefault();
-    if (!form.name) { alert("Vui lòng nhập Họ tên"); return; }
+  if (e && e.preventDefault) e.preventDefault();
+  if (!form.name) { alert("Vui lòng nhập Họ tên"); return; }
 
-    const payload = clone(form);
-    payload.timeSaved = new Date().toISOString();
+  // clone form then normalize time-like fields to HH:MM
+  const payload = clone(form);
 
-    try {
-      if (editId) {
-        // merge so old fields not lost
-        await setDoc(doc(db, "ponv_records", editId), payload, { merge: true });
-        setEditId(null);
-      } else {
-        await addDoc(colRef, payload);
-      }
-      setForm(clone(DEFAULT_FORM));
-      await loadRecords();
-      alert("Đã lưu");
-    } catch (err) {
-      console.error("save error:", err);
-      alert("Lỗi khi lưu (xem console)");
-    }
+  // Normalize commonly used time fields so Firestore stores consistent "HH:MM" strings
+  payload.surgeryTime = formatTimeForExport(payload.surgeryTime);
+  payload.pacuOutTime = formatTimeForExport(payload.pacuOutTime);
+  payload.extubationTime = formatTimeForExport(payload.extubationTime);
+  payload.lastMealTime = formatTimeForExport(payload.lastMealTime);
+  payload.firstDrinkTime = formatTimeForExport(payload.firstDrinkTime);
+
+  // also ensure PONV times (if user put strange values)
+  if (payload.ponv) {
+    if (payload.ponv.p0_6) payload.ponv.p0_6.times = payload.ponv.p0_6.times || "";
+    if (payload.ponv.p7_24) payload.ponv.p7_24.times = payload.ponv.p7_24.times || "";
+    if (payload.ponv.p_gt24) payload.ponv.p_gt24.times = payload.ponv.p_gt24.times || "";
   }
+
+  payload.timeSaved = new Date().toISOString();
+
+  try {
+    if (editId) {
+      // merge so old fields not lost
+      await setDoc(doc(db, "ponv_records", editId), payload, { merge: true });
+      setEditId(null);
+    } else {
+      await addDoc(colRef, payload);
+    }
+    setForm(clone(DEFAULT_FORM));
+    await loadRecords();
+    alert("Đã lưu");
+  } catch (err) {
+    console.error("save error:", err);
+    alert("Lỗi khi lưu (xem console)");
+  }
+}
+
 
   function startEdit(rec) {
     setForm(mergeDefaults(rec));
@@ -327,58 +391,114 @@ export default function App() {
   });
 
   // export to excel, flatten rows
-  function exportExcel() {
-    const rows = filtered.map(r => {
-      const flat = {
-        id: r.id,
-        name: r.name,
-        age: r.age,
-        gender: r.gender,
-        surgeryDate: r.surgeryDate,
-        surgeryTime: r.surgeryTime,
-        pacuOutTime: r.pacuOutTime,
-        extubationTime: r.extubationTime,
-        motionSickness: r.history?.motionSickness ? "Có" : "Không",
-        smoking: r.history?.smoking ? "Có" : "Không",
-        prevPONV: r.history?.prevPONV ? "Có" : "Không",
-        reversalAgent: r.reversalAgent,
-        morphineUse: r.postop?.morphineUse ? "Có" : "Không",
-        morphineDoseMg: r.postop?.morphineDoseMg || "",
-        analgesiaMethod: r.postop?.analgesiaMethod || "",
-        analgesic1: r.postop?.analgesic1 || "",
-        analgesic1Conc: r.postop?.analgesic1Conc || "",
-        analgesic2: r.postop?.analgesic2 || "",
-        analgesic2Conc: r.postop?.analgesic2Conc || "",
-        // PONV
-        ponv_p0_6_present: r.ponv?.p0_6?.present ? "Có" : "Không",
-        ponv_p0_6_times: r.ponv?.p0_6?.times || "",
-        ponv_p0_6_sev: r.ponv?.p0_6?.severity || "",
-        ponv_p7_24_present: r.ponv?.p7_24?.present ? "Có" : "Không",
-        ponv_p7_24_times: r.ponv?.p7_24?.times || "",
-        ponv_p7_24_sev: r.ponv?.p7_24?.severity || "",
-        ponv_pgt24_present: r.ponv?.p_gt24?.present ? "Có" : "Không",
-        ponv_pgt24_times: r.ponv?.p_gt24?.times || "",
-        ponv_pgt24_sev: r.ponv?.p_gt24?.severity || "",
-        // clinical (sample)
-        vas_p0_6: r.clinical?.vas?.p0_6 || "",
-        bp_p0_6: r.clinical?.bp?.p0_6 || "",
-        temp_p0_6: r.clinical?.temp?.p0_6 || "",
-        symptomsNote: r.symptomsNote || "",
-        notes: r.notes || "",
-        timeSaved: r.timeSaved || "",
+function exportExcel() {
+  try {
+    // Build rows from filtered (already filtered list from UI)
+    const headers = [
+      "STT",
+      "Tên bệnh nhân",
+      "Tuổi",
+      "Giới tính",
+      "Ngày mổ",
+      "Giờ phẫu thuật",
+      "Giờ ra HS (PACU)",
+      "Giờ rút NKQ",
+      "Lần ăn cuối",
+      "Uống lần đầu",
+      "Máu mất (ml)",
+      "Dịch truyền (ml)",
+      "Số DL màng phổi",
+      "Phương pháp giải giãn cơ",
+      "Phương thức giảm đau",
+      "Thuốc giảm đau 1",
+      "Liều/Nồng độ 1",
+      "Thuốc giảm đau 2",
+      "Liều/Nồng độ 2",
+      "Dùng Morphin",
+      "Liều Morphin (mg)",
+      "Tiền sử say tàu xe",
+      "Hút thuốc",
+      "Tiền sử PONV",
+      "PONV 0-6h (Có nôn)",
+      "PONV 0-6h (Số lần)",
+      "PONV 0-6h (Mức độ)",
+      "PONV 7-24h (Có nôn)",
+      "PONV 7-24h (Số lần)",
+      "PONV 7-24h (Mức độ)",
+      "PONV >24h (Có nôn)",
+      "PONV >24h (Số lần)",
+      "PONV >24h (Mức độ)",
+      "VAS 0-6h",
+      "VAS 7-24h",
+      "VAS Ngày 2",
+      "VAS Ngày 3",
+      "HA 0-6h",
+      "Nhiệt 0-6h",
+      "Ghi chú triệu chứng",
+      "Ghi chú",
+      "Thời gian lưu (ISO)"
+    ];
+
+    const rows = filtered.map((r, idx) => {
+      return {
+        "STT": idx + 1,
+        "Tên bệnh nhân": r.name || "",
+        "Tuổi": r.age || "",
+        "Giới tính": r.gender || "",
+        "Ngày mổ": r.surgeryDate || "",
+        "Giờ phẫu thuật": formatTimeForExport(r.surgeryTime),
+        "Giờ ra HS (PACU)": formatTimeForExport(r.pacuOutTime),
+        "Giờ rút NKQ": formatTimeForExport(r.extubationTime),
+        "Lần ăn cuối": formatTimeForExport(r.lastMealTime),
+        "Uống lần đầu": formatTimeForExport(r.firstDrinkTime),
+        "Máu mất (ml)": r.bloodLossMl || "",
+        "Dịch truyền (ml)": r.fluidsMl || "",
+        "Số DL màng phổi": r.chestDrainCount || "",
+        "Phương pháp giải giãn cơ": r.reversalAgent || "",
+        "Phương thức giảm đau": r.postop?.analgesiaMethod || "",
+        "Thuốc giảm đau 1": r.postop?.analgesic1 || "",
+        "Liều/Nồng độ 1": r.postop?.analgesic1Conc || "",
+        "Thuốc giảm đau 2": r.postop?.analgesic2 || "",
+        "Liều/Nồng độ 2": r.postop?.analgesic2Conc || "",
+        "Dùng Morphin": r.postop?.morphineUse ? "Có" : "Không",
+        "Liều Morphin (mg)": r.postop?.morphineDoseMg || "",
+        "Tiền sử say tàu xe": r.history?.motionSickness ? "Có" : "Không",
+        "Hút thuốc": r.history?.smoking ? "Có" : "Không",
+        "Tiền sử PONV": r.history?.prevPONV ? "Có" : "Không",
+        "PONV 0-6h (Có nôn)": r.ponv?.p0_6?.present ? "Có" : "Không",
+        "PONV 0-6h (Số lần)": r.ponv?.p0_6?.times || "",
+        "PONV 0-6h (Mức độ)": r.ponv?.p0_6?.severity || "",
+        "PONV 7-24h (Có nôn)": r.ponv?.p7_24?.present ? "Có" : "Không",
+        "PONV 7-24h (Số lần)": r.ponv?.p7_24?.times || "",
+        "PONV 7-24h (Mức độ)": r.ponv?.p7_24?.severity || "",
+        "PONV >24h (Có nôn)": r.ponv?.p_gt24?.present ? "Có" : "Không",
+        "PONV >24h (Số lần)": r.ponv?.p_gt24?.times || "",
+        "PONV >24h (Mức độ)": r.ponv?.p_gt24?.severity || "",
+        "VAS 0-6h": r.clinical?.vas?.p0_6 || "",
+        "VAS 7-24h": r.clinical?.vas?.p7_24 || "",
+        "VAS Ngày 2": r.clinical?.vas?.day2 || "",
+        "VAS Ngày 3": r.clinical?.vas?.day3 || "",
+        "HA 0-6h": r.clinical?.bp?.p0_6 || "",
+        "Nhiệt 0-6h": r.clinical?.temp?.p0_6 || "",
+        "Ghi chú triệu chứng": r.symptomsNote || "",
+        "Ghi chú": r.notes || "",
+        "Thời gian lưu (ISO)": r.timeSaved || ""
       };
-      // meds flatten
-      if (r.meds?.vasopressors) {
-        flat.vasopressors_p0_6 = r.meds.vasopressors.p0_6 || "";
-      }
-      return flat;
     });
-    const ws = XLSX.utils.json_to_sheet(rows);
+
+    // create worksheet with explicit header (ensures order)
+    const ws = XLSX.utils.json_to_sheet(rows, { header: headers });
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "PONV");
     const today = new Date().toISOString().slice(0, 10);
     XLSX.writeFile(wb, `ponv_records_${today}.xlsx`);
+    // done
+  } catch (err) {
+    console.error("exportExcel error:", err);
+    alert("Lỗi khi xuất Excel, xem console");
   }
+}
+
 
   /* ================= Render JSX ================= */
   return (
