@@ -198,7 +198,6 @@ function formatTimeForExport(val) {
     if (s === "") return "";
     // already HH:MM
     if (/^\d{1,2}:\d{1,2}$/.test(s)) {
-      // normalize parts and clamp
       const parts = s.split(":");
       const hh = String(Math.max(0, Math.min(23, parseInt(parts[0] || "0", 10)))).padStart(2, "0");
       const mm = String(Math.max(0, Math.min(59, parseInt(parts[1] || "0", 10)))).padStart(2, "0");
@@ -223,7 +222,7 @@ function formatTimeForExport(val) {
         return formatTimeForExport(d);
       }
     }
-    // fallback: try normalizeTimeInput for flexible parsing (it returns "" if can't)
+    // fallback: try normalizeTimeInput
     const tried = normalizeTimeInput(s);
     return tried || s;
   }
@@ -393,7 +392,6 @@ export default function App() {
   // export to excel, flatten rows
 function exportExcel() {
   try {
-    // Build rows from filtered (already filtered list from UI)
     const headers = [
       "STT",
       "Tên bệnh nhân",
@@ -419,6 +417,8 @@ function exportExcel() {
       "Tiền sử say tàu xe",
       "Hút thuốc",
       "Tiền sử PONV",
+
+      // PONV
       "PONV 0-6h (Có nôn)",
       "PONV 0-6h (Số lần)",
       "PONV 0-6h (Mức độ)",
@@ -428,71 +428,144 @@ function exportExcel() {
       "PONV >24h (Có nôn)",
       "PONV >24h (Số lần)",
       "PONV >24h (Mức độ)",
+
+      // Symptoms per timepoint (epigastric, headache, retention)
+      "Đau thượng vị 0-6h",
+      "Đau thượng vị 7-24h",
+      "Đau thượng vị Ngày2",
+      "Đau thượng vị Ngày3",
+
+      "Đau đầu 0-6h",
+      "Đau đầu 7-24h",
+      "Đau đầu Ngày2",
+      "Đau đầu Ngày3",
+
+      "Bí tiểu 0-6h",
+      "Bí tiểu 7-24h",
+      "Bí tiểu Ngày2",
+      "Bí tiểu Ngày3",
+
+      // Meds per timepoint (vasopressors + antihypert)
+      "Vasopressors 0-6h",
+      "Vasopressors 7-24h",
+      "Vasopressors Ngày2",
+      "Vasopressors Ngày3",
+
+      "Antihypert 0-6h",
+      "Antihypert 7-24h",
+      "Antihypert Ngày2",
+      "Antihypert Ngày3",
+
+      // Clinical full (VAS, HA, Temp) already had VAS columns earlier; ensure HA/Temp for all mốc
       "VAS 0-6h",
       "VAS 7-24h",
-      "VAS Ngày 2",
-      "VAS Ngày 3",
+      "VAS Ngày2",
+      "VAS Ngày3",
+
       "HA 0-6h",
+      "HA 7-24h",
+      "HA Ngày2",
+      "HA Ngày3",
+
       "Nhiệt 0-6h",
+      "Nhiệt 7-24h",
+      "Nhiệt Ngày2",
+      "Nhiệt Ngày3",
+
       "Ghi chú triệu chứng",
       "Ghi chú",
       "Thời gian lưu (ISO)"
     ];
 
-    const rows = filtered.map((r, idx) => {
-      return {
-        "STT": idx + 1,
-        "Tên bệnh nhân": r.name || "",
-        "Tuổi": r.age || "",
-        "Giới tính": r.gender || "",
-        "Ngày mổ": r.surgeryDate || "",
-        "Giờ phẫu thuật": formatTimeForExport(r.surgeryTime),
-        "Giờ ra HS (PACU)": formatTimeForExport(r.pacuOutTime),
-        "Giờ rút NKQ": formatTimeForExport(r.extubationTime),
-        "Lần ăn cuối": formatTimeForExport(r.lastMealTime),
-        "Uống lần đầu": formatTimeForExport(r.firstDrinkTime),
-        "Máu mất (ml)": r.bloodLossMl || "",
-        "Dịch truyền (ml)": r.fluidsMl || "",
-        "Số DL màng phổi": r.chestDrainCount || "",
-        "Phương pháp giải giãn cơ": r.reversalAgent || "",
-        "Phương thức giảm đau": r.postop?.analgesiaMethod || "",
-        "Thuốc giảm đau 1": r.postop?.analgesic1 || "",
-        "Liều/Nồng độ 1": r.postop?.analgesic1Conc || "",
-        "Thuốc giảm đau 2": r.postop?.analgesic2 || "",
-        "Liều/Nồng độ 2": r.postop?.analgesic2Conc || "",
-        "Dùng Morphin": r.postop?.morphineUse ? "Có" : "Không",
-        "Liều Morphin (mg)": r.postop?.morphineDoseMg || "",
-        "Tiền sử say tàu xe": r.history?.motionSickness ? "Có" : "Không",
-        "Hút thuốc": r.history?.smoking ? "Có" : "Không",
-        "Tiền sử PONV": r.history?.prevPONV ? "Có" : "Không",
-        "PONV 0-6h (Có nôn)": r.ponv?.p0_6?.present ? "Có" : "Không",
-        "PONV 0-6h (Số lần)": r.ponv?.p0_6?.times || "",
-        "PONV 0-6h (Mức độ)": r.ponv?.p0_6?.severity || "",
-        "PONV 7-24h (Có nôn)": r.ponv?.p7_24?.present ? "Có" : "Không",
-        "PONV 7-24h (Số lần)": r.ponv?.p7_24?.times || "",
-        "PONV 7-24h (Mức độ)": r.ponv?.p7_24?.severity || "",
-        "PONV >24h (Có nôn)": r.ponv?.p_gt24?.present ? "Có" : "Không",
-        "PONV >24h (Số lần)": r.ponv?.p_gt24?.times || "",
-        "PONV >24h (Mức độ)": r.ponv?.p_gt24?.severity || "",
-        "VAS 0-6h": r.clinical?.vas?.p0_6 || "",
-        "VAS 7-24h": r.clinical?.vas?.p7_24 || "",
-        "VAS Ngày 2": r.clinical?.vas?.day2 || "",
-        "VAS Ngày 3": r.clinical?.vas?.day3 || "",
-        "HA 0-6h": r.clinical?.bp?.p0_6 || "",
-        "Nhiệt 0-6h": r.clinical?.temp?.p0_6 || "",
-        "Ghi chú triệu chứng": r.symptomsNote || "",
-        "Ghi chú": r.notes || "",
-        "Thời gian lưu (ISO)": r.timeSaved || ""
-      };
-    });
+    const rows = filtered.map((r, idx) => ({
+      "STT": idx + 1,
+      "Tên bệnh nhân": r.name || "",
+      "Tuổi": r.age || "",
+      "Giới tính": r.gender || "",
+      "Ngày mổ": r.surgeryDate || "",
+      "Giờ phẫu thuật": formatTimeForExport(r.surgeryTime),
+      "Giờ ra HS (PACU)": formatTimeForExport(r.pacuOutTime),
+      "Giờ rút NKQ": formatTimeForExport(r.extubationTime),
+      "Lần ăn cuối": formatTimeForExport(r.lastMealTime),
+      "Uống lần đầu": formatTimeForExport(r.firstDrinkTime),
+      "Máu mất (ml)": r.bloodLossMl || "",
+      "Dịch truyền (ml)": r.fluidsMl || "",
+      "Số DL màng phổi": r.chestDrainCount || "",
+      "Phương pháp giải giãn cơ": r.reversalAgent || "",
+      "Phương thức giảm đau": r.postop?.analgesiaMethod || "",
+      "Thuốc giảm đau 1": r.postop?.analgesic1 || "",
+      "Liều/Nồng độ 1": r.postop?.analgesic1Conc || "",
+      "Thuốc giảm đau 2": r.postop?.analgesic2 || "",
+      "Liều/Nồng độ 2": r.postop?.analgesic2Conc || "",
+      "Dùng Morphin": r.postop?.morphineUse ? "Có" : "Không",
+      "Liều Morphin (mg)": r.postop?.morphineDoseMg || "",
+      "Tiền sử say tàu xe": r.history?.motionSickness ? "Có" : "Không",
+      "Hút thuốc": r.history?.smoking ? "Có" : "Không",
+      "Tiền sử PONV": r.history?.prevPONV ? "Có" : "Không",
 
-    // create worksheet with explicit header (ensures order)
+      "PONV 0-6h (Có nôn)": r.ponv?.p0_6?.present ? "Có" : "Không",
+      "PONV 0-6h (Số lần)": r.ponv?.p0_6?.times || "",
+      "PONV 0-6h (Mức độ)": r.ponv?.p0_6?.severity || "",
+      "PONV 7-24h (Có nôn)": r.ponv?.p7_24?.present ? "Có" : "Không",
+      "PONV 7-24h (Số lần)": r.ponv?.p7_24?.times || "",
+      "PONV 7-24h (Mức độ)": r.ponv?.p7_24?.severity || "",
+      "PONV >24h (Có nôn)": r.ponv?.p_gt24?.present ? "Có" : "Không",
+      "PONV >24h (Số lần)": r.ponv?.p_gt24?.times || "",
+      "PONV >24h (Mức độ)": r.ponv?.p_gt24?.severity || "",
+
+      // Symptoms
+      "Đau thượng vị 0-6h": r.symptoms?.epigastric?.p0_6 ? "Có" : "Không",
+      "Đau thượng vị 7-24h": r.symptoms?.epigastric?.p7_24 ? "Có" : "Không",
+      "Đau thượng vị Ngày2": r.symptoms?.epigastric?.day2 ? "Có" : "Không",
+      "Đau thượng vị Ngày3": r.symptoms?.epigastric?.day3 ? "Có" : "Không",
+
+      "Đau đầu 0-6h": r.symptoms?.headache?.p0_6 ? "Có" : "Không",
+      "Đau đầu 7-24h": r.symptoms?.headache?.p7_24 ? "Có" : "Không",
+      "Đau đầu Ngày2": r.symptoms?.headache?.day2 ? "Có" : "Không",
+      "Đau đầu Ngày3": r.symptoms?.headache?.day3 ? "Có" : "Không",
+
+      "Bí tiểu 0-6h": r.symptoms?.retention?.p0_6 ? "Có" : "Không",
+      "Bí tiểu 7-24h": r.symptoms?.retention?.p7_24 ? "Có" : "Không",
+      "Bí tiểu Ngày2": r.symptoms?.retention?.day2 ? "Có" : "Không",
+      "Bí tiểu Ngày3": r.symptoms?.retention?.day3 ? "Có" : "Không",
+
+      // meds
+      "Vasopressors 0-6h": r.meds?.vasopressors?.p0_6 || "",
+      "Vasopressors 7-24h": r.meds?.vasopressors?.p7_24 || "",
+      "Vasopressors Ngày2": r.meds?.vasopressors?.day2 || "",
+      "Vasopressors Ngày3": r.meds?.vasopressors?.day3 || "",
+
+      "Antihypert 0-6h": r.meds?.antihypert?.p0_6 || "",
+      "Antihypert 7-24h": r.meds?.antihypert?.p7_24 || "",
+      "Antihypert Ngày2": r.meds?.antihypert?.day2 || "",
+      "Antihypert Ngày3": r.meds?.antihypert?.day3 || "",
+
+      // Clinical full
+      "VAS 0-6h": r.clinical?.vas?.p0_6 || "",
+      "VAS 7-24h": r.clinical?.vas?.p7_24 || "",
+      "VAS Ngày2": r.clinical?.vas?.day2 || "",
+      "VAS Ngày3": r.clinical?.vas?.day3 || "",
+
+      "HA 0-6h": r.clinical?.bp?.p0_6 || "",
+      "HA 7-24h": r.clinical?.bp?.p7_24 || "",
+      "HA Ngày2": r.clinical?.bp?.day2 || "",
+      "HA Ngày3": r.clinical?.bp?.day3 || "",
+
+      "Nhiệt 0-6h": r.clinical?.temp?.p0_6 || "",
+      "Nhiệt 7-24h": r.clinical?.temp?.p7_24 || "",
+      "Nhiệt Ngày2": r.clinical?.temp?.day2 || "",
+      "Nhiệt Ngày3": r.clinical?.temp?.day3 || "",
+
+      "Ghi chú triệu chứng": r.symptomsNote || "",
+      "Ghi chú": r.notes || "",
+      "Thời gian lưu (ISO)": r.timeSaved || ""
+    }));
+
     const ws = XLSX.utils.json_to_sheet(rows, { header: headers });
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "PONV");
     const today = new Date().toISOString().slice(0, 10);
     XLSX.writeFile(wb, `ponv_records_${today}.xlsx`);
-    // done
   } catch (err) {
     console.error("exportExcel error:", err);
     alert("Lỗi khi xuất Excel, xem console");
@@ -530,38 +603,61 @@ function exportExcel() {
       {/* FORM */}
       <form onSubmit={(e) => { e.preventDefault(); handleSave(e); }} style={styles.form}>
         {/* Patient info */}
-        <Card title="Thông tin bệnh nhân">
-          <Row>
-            <Col>
-              <Label>Họ tên</Label>
-              <Input name="name" value={form.name || ""} onChange={handleChange} />
-            </Col>
-            <Col>
-              <Label>Tuổi</Label>
-              <Input name="age" value={form.age || ""} onChange={handleChange} type="number" />
-            </Col>
-            <Col>
-              <Label>Giới tính</Label>
-              <Select name="gender" value={form.gender || ""} onChange={handleChange} options={["", "Nam", "Nữ"]} />
-            </Col>
-            <Col>
-              <Label>Ngày phẫu thuật</Label>
-              <Input name="surgeryDate" type="date" value={form.surgeryDate || ""} onChange={handleChange} />
-            </Col>
-            <Col>
-              <Label>Giờ phẫu thuật (24h)</Label>
-              <Input name="surgeryTime" type="time" step="60" value={form.surgeryTime || ""} onChange={handleChange} onBlur={handleTimeBlur} />
-            </Col>
-            <Col>
-              <Label>Giờ ra hồi sức (24h)</Label>
-              <Input name="pacuOutTime" type="time" step="60" value={form.pacuOutTime || ""} onChange={handleChange} onBlur={handleTimeBlur} />
-            </Col>
-            <Col>
-              <Label>Giờ rút NKQ (24h)</Label>
-              <Input name="extubationTime" type="time" step="60" value={form.extubationTime || ""} onChange={handleChange} onBlur={handleTimeBlur} />
-            </Col>
-          </Row>
-        </Card>
+        {/* Patient info */}
+		<Card title="Thông tin bệnh nhân">
+		  <Row>
+		    <Col>
+		      <Label>Họ tên</Label>
+		      <Input name="name" value={form.name || ""} onChange={handleChange} />
+		    </Col>
+		    <Col>
+		      <Label>Tuổi</Label>
+		      <Input name="age" value={form.age || ""} onChange={handleChange} type="number" />
+		    </Col>
+		    <Col>
+		      <Label>Giới tính</Label>
+		      <Select name="gender" value={form.gender || ""} onChange={handleChange} options={["", "Nam", "Nữ"]} />
+		    </Col>
+		    <Col>
+		      <Label>Ngày phẫu thuật</Label>
+		      <Input name="surgeryDate" type="date" value={form.surgeryDate || ""} onChange={handleChange} />
+		    </Col>
+		    <Col>
+		      <Label>Giờ phẫu thuật (24h)</Label>
+		      <Input
+		        name="surgeryTime"
+		        type="text"
+		        placeholder="HH:MM"
+		        value={form.surgeryTime || ""}
+		        onChange={handleChange}
+		        onBlur={handleTimeBlur}
+		      />
+		    </Col>
+		    <Col>
+		      <Label>Giờ ra hồi sức (24h)</Label>
+		      <Input
+		        name="pacuOutTime"
+		        type="text"
+		        placeholder="HH:MM"
+		        value={form.pacuOutTime || ""}
+		        onChange={handleChange}
+		        onBlur={handleTimeBlur}
+		      />
+		    </Col>
+		    <Col>
+		      <Label>Giờ rút NKQ (24h)</Label>
+		      <Input
+		        name="extubationTime"
+		        type="text"
+		        placeholder="HH:MM"
+		        value={form.extubationTime || ""}
+		        onChange={handleChange}
+		        onBlur={handleTimeBlur}
+		      />
+		    </Col>
+		  </Row>
+		</Card>
+
 
         {/* History */}
         <Card title="Tiền sử">
@@ -590,13 +686,28 @@ function exportExcel() {
               <Input name="fluidsMl" type="number" value={form.fluidsMl || ""} onChange={handleChange} />
             </Col>
             <Col>
-              <Label>Lần ăn cuối (thời gian)</Label>
-              <Input name="lastMealTime" type="time" step="60" value={form.lastMealTime || ""} onChange={handleChange} onBlur={handleTimeBlur} />
-            </Col>
-            <Col>
-              <Label>Uống lần đầu (thời gian)</Label>
-              <Input name="firstDrinkTime" type="time" step="60" value={form.firstDrinkTime || ""} onChange={handleChange} onBlur={handleTimeBlur} />
-            </Col>
+  <Label>Bữa ăn cuối trước PT (thời gian)</Label>
+  <Input
+    name="lastMealTime"
+    type="text"
+    placeholder="HH:MM"
+    value={form.lastMealTime || ""}
+    onChange={handleChange}
+    onBlur={handleTimeBlur}
+  />
+</Col>
+<Col>
+  <Label>Uống lần đầu (thời gian)</Label>
+  <Input
+    name="firstDrinkTime"
+    type="text"
+    placeholder="HH:MM"
+    value={form.firstDrinkTime || ""}
+    onChange={handleChange}
+    onBlur={handleTimeBlur}
+  />
+</Col>
+
             <Col>
               <Label>Số DL màng phổi</Label>
               <Input name="chestDrainCount" type="number" value={form.chestDrainCount || ""} onChange={handleChange} />
