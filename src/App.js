@@ -197,4 +197,74 @@ export default function App() {
           <input name="nausea7_24h" placeholder="Số lần 7-24h" value={form.nausea7_24h} onChange={handleChange} />
           <input name="severity7_24h" placeholder="Mức độ 7-24h" value={form.severity7_24h} onChange={handleChange} />
         </fieldset>
+                <fieldset>
+          <legend>Điểm lâm sàng</legend>
+          <input name="vas_0_6h" placeholder="VAS 0-6h" value={form.vas_0_6h} onChange={handleChange} />
+          <input name="vas_7_24h" placeholder="VAS 7-24h" value={form.vas_7_24h} onChange={handleChange} />
+          <input name="vas_day2" placeholder="VAS Ngày 2" value={form.vas_day2} onChange={handleChange} />
+          <input name="vas_day3" placeholder="VAS Ngày 3" value={form.vas_day3} onChange={handleChange} />
+        </fieldset>
+
+        <fieldset>
+          <legend>HA - Nhiệt độ</legend>
+          <input name="bp_0_6h" placeholder="HA 0-6h" value={form.bp_0_6h} onChange={handleChange} />
+          <input name="bp_7_24h" placeholder="HA 7-24h" value={form.bp_7_24h} onChange={handleChange} />
+          <input name="bp_day2" placeholder="HA Ngày 2" value={form.bp_day2} onChange={handleChange} />
+          <input name="bp_day3" placeholder="HA Ngày 3" value={form.bp_day3} onChange={handleChange} />
+          <input name="temp_0_6h" placeholder="Sốt/Max 0-6h" value={form.temp_0_6h} onChange={handleChange} />
+          <input name="temp_7_24h" placeholder="Sốt/Max 7-24h" value={form.temp_7_24h} onChange={handleChange} />
+          <input name="temp_day2" placeholder="Sốt/Max Ngày 2" value={form.temp_day2} onChange={handleChange} />
+          <input name="temp_day3" placeholder="Sốt/Max Ngày 3" value={form.temp_day3} onChange={handleChange} />
+        </fieldset>
+
+        <fieldset>
+          <legend>Khác</legend>
+          <textarea name="symptoms" placeholder="Triệu chứng khác" value={form.symptoms} onChange={handleChange}></textarea>
+          <textarea name="notes" placeholder="Ghi chú" value={form.notes} onChange={handleChange}></textarea>
+        </fieldset>
+
+        <button type="submit">{editId ? "Cập nhật" : "Thêm mới"}</button>
+      </form>
+
+      {/* Bảng dữ liệu */}
+      <table>
+        <thead>
+          <tr>
+            <th>Họ tên</th>
+            <th>Tuổi</th>
+            <th>Ngày mổ</th>
+            <th>Tiền sử say xe</th>
+            <th>Hút thuốc</th>
+            <th>Tiền sử nôn</th>
+            <th>Lượng máu mất</th>
+            <th>Dịch truyền</th>
+            <th>Triệu chứng</th>
+            <th>Ghi chú</th>
+            <th>Hành động</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filteredPatients.map((p) => (
+            <tr key={p.id}>
+              <td>{p.name}</td>
+              <td>{p.age}</td>
+              <td>{p.surgeryDate}</td>
+              <td>{p.historyCarSickness}</td>
+              <td>{p.smoking}</td>
+              <td>{p.vomitingHistory}</td>
+              <td>{p.bloodLoss}</td>
+              <td>{p.fluidIn}</td>
+              <td>{p.symptoms}</td>
+              <td>{p.notes}</td>
+              <td>
+                <button onClick={() => handleEdit(p)}>Sửa</button>
+                <button onClick={() => handleDelete(p.id)}>Xóa</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
         
