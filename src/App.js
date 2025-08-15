@@ -532,3 +532,211 @@ export default function App() {
   );
 }
 
+// ===================== UI Helpers =====================
+const Card = ({ title, children }) => (
+  <div style={styles.card}>
+    <div style={styles.cardTitle}>{title}</div>
+    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+      {children}
+    </div>
+  </div>
+);
+
+const Row = ({ children }) => (
+  <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))" }}>
+    {children}
+  </div>
+);
+
+const Col = ({ children, w, center }) => (
+  <div
+    style={{
+      minWidth: w || "auto",
+      display: center ? "flex" : "block",
+      alignItems: center ? "center" : "stretch",
+      gap: 8
+    }}
+  >
+    {children}
+  </div>
+);
+
+const Label = ({ children }) => (
+  <label style={{ display: "block", fontSize: 13, color: "#334155", marginBottom: 4 }}>
+    {children}
+  </label>
+);
+
+const Input = (props) => (
+  <input
+    {...props}
+    style={{
+      ...styles.input,
+      ...(props.style || {}),
+    }}
+  />
+);
+
+const Select = ({ options, ...props }) => (
+  <select {...props} style={styles.input}>
+    {options.map((op) => (
+      <option key={op} value={op}>
+        {op}
+      </option>
+    ))}
+  </select>
+);
+
+const Check = ({ label, ...props }) => (
+  <label
+    style={{
+      display: "flex",
+      alignItems: "center",
+      gap: 8,
+      padding: 6,
+      border: "1px solid #e2e8f0",
+      borderRadius: 8,
+    }}
+  >
+    <input type="checkbox" {...props} />
+    {label}
+  </label>
+);
+
+const TimeBlock = ({ label, base, value, onChange }) => (
+  <div style={{ border: "1px dashed #cbd5e1", borderRadius: 10, padding: 12, marginTop: 8 }}>
+    <div style={{ fontWeight: 600, marginBottom: 8 }}>{label}</div>
+    <Row>
+      <Col w="180px" center>
+        <Check
+          name={`${base}.present`}
+          label="Có PONV"
+          checked={!!value?.present}
+          onChange={onChange}
+        />
+      </Col>
+      <Col>
+        <Label>Số lần</Label>
+        <Input
+          name={`${base}.times`}
+          type="number"
+          value={value?.times || ""}
+          onChange={onChange}
+          placeholder="0"
+        />
+      </Col>
+      <Col>
+        <Label>Mức độ</Label>
+        <Select
+          name={`${base}.severity`}
+          value={value?.severity || ""}
+          onChange={onChange}
+          options={["", "1", "2", "3", "4"]}
+        />
+      </Col>
+    </Row>
+  </div>
+);
+
+function renderClinicalRow(label, k1, k2, k3, k4, form, onChange) {
+  return (
+    <tr>
+      <td style={styles.tdLabel}>{label}</td>
+      <td style={styles.td}><input style={styles.cellInput} name={k1} value={deepGet(form, k1)} onChange={onChange} /></td>
+      <td style={styles.td}><input style={styles.cellInput} name={k2} value={deepGet(form, k2)} onChange={onChange} /></td>
+      <td style={styles.td}><input style={styles.cellInput} name={k3} value={deepGet(form, k3)} onChange={onChange} /></td>
+      <td style={styles.td}><input style={styles.cellInput} name={k4} value={deepGet(form, k4)} onChange={onChange} /></td>
+    </tr>
+  );
+}
+
+function renderSymptomsRow(label, k1, k2, k3, k4, form, onChange) {
+  return (
+    <tr>
+      <td style={styles.tdLabel}>{label}</td>
+      <td style={styles.tdCenter}>
+        <input type="checkbox" name={k1} checked={!!deepGet(form, k1)} onChange={onChange} />
+      </td>
+      <td style={styles.tdCenter}>
+        <input type="checkbox" name={k2} checked={!!deepGet(form, k2)} onChange={onChange} />
+      </td>
+      <td style={styles.tdCenter}>
+        <input type="checkbox" name={k3} checked={!!deepGet(form, k3)} onChange={onChange} />
+      </td>
+      <td style={styles.tdCenter}>
+        <input type="checkbox" name={k4} checked={!!deepGet(form, k4)} onChange={onChange} />
+      </td>
+    </tr>
+  );
+}
+
+function renderMedsRow(label, k1, k2, k3, k4, form, onChange) {
+  return (
+    <tr>
+      <td style={styles.tdLabel}>{label}</td>
+      <td style={styles.td}><input style={styles.cellInput} name={k1} value={deepGet(form, k1)} onChange={onChange} placeholder="Tên/liều" /></td>
+      <td style={styles.td}><input style={styles.cellInput} name={k2} value={deepGet(form, k2)} onChange={onChange} placeholder="Tên/liều" /></td>
+      <td style={styles.td}><input style={styles.cellInput} name={k3} value={deepGet(form, k3)} onChange={onChange} placeholder="Tên/liều" /></td>
+      <td style={styles.td}><input style={styles.cellInput} name={k4} value={deepGet(form, k4)} onChange={onChange} placeholder="Tên/liều" /></td>
+    </tr>
+  );
+}
+
+// ===================== Utils =====================
+function deepGet(obj, path) {
+  return path.split(".").reduce((acc, k) => (acc ? acc[k] : ""), obj);
+}
+
+function mergeDeep(target, source) {
+  if (typeof target !== "object" || target === null) return source;
+  Object.keys(source).forEach((key) => {
+    if (source[key] && typeof source[key] === "object" && !Array.isArray(source[key])) {
+      if (!target[key]) target[key] = {};
+      mergeDeep(target[key], source[key]);
+    } else {
+      target[key] = source[key];
+    }
+  });
+  return target;
+}
+
+function yesNo(v) {
+  return v ? "Có" : "Không";
+}
+
+function joinNameConc(name, conc) {
+  if (!name && !conc) return "";
+  if (name && conc) return `${name} (${conc})`;
+  return name || conc || "";
+}
+
+function ponvStr(p) {
+  if (!p) return "";
+  const has = p.present ? "Có" : "Không";
+  const times = p.times ? `, SL: ${p.times}` : "";
+  const sev = p.severity ? `, Mức: ${p.severity}` : "";
+  return `${has}${times}${sev}`;
+}
+
+// ===================== Styles =====================
+const styles = {
+  container: { padding: 18, maxWidth: 1180, margin: "0 auto", fontFamily: "system-ui, -apple-system, Segoe UI, Roboto, Arial" },
+  title: { margin: "4px 0 14px", fontSize: 24 },
+  toolbar: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12, gap: 12, flexWrap: "wrap" },
+  toolbarLeft: { display: "flex", gap: 8, flexWrap: "wrap" },
+  button: { padding: "10px 14px", background: "#2563eb", color: "#fff", border: "0", borderRadius: 10, cursor: "pointer" },
+  buttonSecondary: { padding: "10px 14px", background: "#e2e8f0", color: "#111827", border: "0", borderRadius: 10, cursor: "pointer" },
+  smallBtn: { padding: "6px 10px", background: "#2563eb", color: "#fff", border: "0", borderRadius: 8, cursor: "pointer" },
+  smallBtnDanger: { padding: "6px 10px", background: "#ef4444", color: "#fff", border: "0", borderRadius: 8, cursor: "pointer" },
+  input: { width: "100%", padding: "10px 12px", border: "1px solid #e2e8f0", borderRadius: 10, outline: "none" },
+  textarea: { width: "100%", padding: "10px 12px", border: "1px solid #e2e8f0", borderRadius: 10, outline: "none" },
+  grid: { display: "grid", gap: 12 },
+  card: { background: "#ffffff", border: "1px solid #e5e7eb", borderRadius: 14, padding: 14, boxShadow: "0 1px 2px rgba(0,0,0,0.04)" },
+  cardTitle: { fontWeight: 700, color: "#1f2937", borderLeft: "4px solid #2563eb", paddingLeft: 8, marginBottom: 10 },
+  table: { width: "100%", borderCollapse: "collapse", background: "#fff", borderRadius: 10, overflow: "hidden" },
+  th: { textAlign: "left", background: "#f1f5f9", padding: "10px 8px", borderBottom: "1px solid #e2e8f0", fontWeight: 600 },
+  td: { padding: "8px 8px", borderBottom: "1px solid #f1f5f9" },
+  tdLabel: { padding: "8px 8px", borderBottom: "1px solid #f1f5f9", fontWeight: 600, whiteSpace: "nowrap" },
+  tdCenter: { padding: "8px 8px", borderBottom: "1px solid #f1f5f9", textAlign: "center" },
+  cellInput: { width: "100%", padding: "8px 10px", border: "1px solid #e2e8f0", borderRadius: 8, outline: "none" }
+};
