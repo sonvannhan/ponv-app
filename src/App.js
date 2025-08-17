@@ -364,15 +364,25 @@ export default function App() {
   }
 
   async function handleDelete(id) {
-    if (!window.confirm("Bạn có chắc muốn xóa?")) return;
-    try {
-      await deleteDoc(doc(db, "ponv_records", id));
-      await loadRecords();
-    } catch (err) {
-      console.error("delete error:", err);
-      alert("Lỗi khi xóa");
-    }
+  const confirmed = window.confirm("Bạn có chắc muốn xóa bệnh nhân này?");
+  if (!confirmed) return;
+
+  const password = prompt("Nhập mật khẩu để xác nhận xóa:");
+  if (password !== "123456") {  // ← Bạn có thể đổi mật khẩu tại đây
+    alert("Sai mật khẩu. Không thể xóa.");
+    return;
   }
+
+  try {
+    await deleteDoc(doc(db, "ponv_records", id));
+    await loadRecords();
+    alert("Đã xóa thành công.");
+  } catch (err) {
+    console.error("delete error:", err);
+    alert("Lỗi khi xóa");
+  }
+}
+
 
   function clearFilters() {
     setSearchName("");
