@@ -327,7 +327,7 @@ export default function App() {
   payload.surgeryTime = formatTimeForExport(payload.surgeryTime);
   payload.pacuOutTime = formatTimeForExport(payload.pacuOutTime);
   payload.extubationTime = formatTimeForExport(payload.extubationTime);
-  payload.lastMealTime = formatTimeForExport(payload.lastMealTime);
+  //payload.lastMealTime = formatTimeForExport(payload.lastMealTime);
   payload.firstDrinkTime = formatTimeForExport(payload.firstDrinkTime);
 
   // also ensure PONV times (if user put strange values)
@@ -486,7 +486,8 @@ function exportExcel() {
       "Giờ phẫu thuật": formatTimeForExport(r.surgeryTime),
       "Giờ ra HS (PACU)": formatTimeForExport(r.pacuOutTime),
       "Giờ rút NKQ": formatTimeForExport(r.extubationTime),
-      "Lần ăn cuối": formatTimeForExport(r.lastMealTime),
+      "Lần ăn cuối": r.lastMealTime || "",
+	  "Ghi chú nhịn ăn (nếu có)": r.MealTimenotes || "",
       "Uống lần đầu": formatTimeForExport(r.firstDrinkTime),
       "Máu mất trong mổ (ml)": r.bloodLossMl || "",
       "Dịch truyền trong mổ (ml)": r.fluidsMl || "",
