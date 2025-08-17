@@ -403,8 +403,8 @@ function exportExcel() {
       "Giờ rút NKQ",
       "Lần ăn cuối",
       "Uống lần đầu",
-      "Máu mất (ml)",
-      "Dịch truyền (ml)",
+      "Máu mất trong mổ (ml)",
+      "Dịch truyền trong mổ (ml)",
       "Số DL màng phổi",
       "Phương pháp giải giãn cơ",
       "Phương thức giảm đau",
@@ -488,8 +488,8 @@ function exportExcel() {
       "Giờ rút NKQ": formatTimeForExport(r.extubationTime),
       "Lần ăn cuối": formatTimeForExport(r.lastMealTime),
       "Uống lần đầu": formatTimeForExport(r.firstDrinkTime),
-      "Máu mất (ml)": r.bloodLossMl || "",
-      "Dịch truyền (ml)": r.fluidsMl || "",
+      "Máu mất trong mổ (ml)": r.bloodLossMl || "",
+      "Dịch truyền trong mổ (ml)": r.fluidsMl || "",
       "Số DL màng phổi": r.chestDrainCount || "",
       "Phương pháp giải giãn cơ": r.reversalAgent || "",
       "Phương thức giảm đau": r.postop?.analgesiaMethod || "",
@@ -675,27 +675,26 @@ function exportExcel() {
         </Card>
 
         {/* Intra / Postop */}
-        <Card title="Trong mổ & Giảm đau">
+        <Card title="Trong mổ-Sau mổ & Giảm đau">
           <Row>
             <Col>
-              <Label>Máu mất (ml)</Label>
+              <Label>Máu mất trong mổ (ml)</Label>
               <Input name="bloodLossMl" type="number" value={form.bloodLossMl || ""} onChange={handleChange} />
             </Col>
             <Col>
-              <Label>Dịch truyền (ml)</Label>
+              <Label>Dịch truyền trong mổ (ml)</Label>
               <Input name="fluidsMl" type="number" value={form.fluidsMl || ""} onChange={handleChange} />
             </Col>
+			</Row>
+			<Row>
             <Col>
-  <Label>Bữa ăn cuối trước PT (thời gian)</Label>
-  <Input
-    name="lastMealTime"
-    type="text"
-    placeholder="HH:MM"
-    value={form.lastMealTime || ""}
-    onChange={handleChange}
-    onBlur={handleTimeBlur}
-  />
+  <Label>Nhịn ăn trước PT (thời gian)</Label>
+<Select name="lastMealTime" value={deepGet(form, "lastMealTime") || ""} onChange={handleChange} options={["", "Nhịn từ sáng sớm", "Nhịn từ tối ngày trước", "Khác"]} />
 </Col>
+	<Col>
+        <Label>Ghi chú nhịn ăn (nếu có)</Label>
+        <textarea name="MealTimenotes" value={form.MealTimenotes || ""} onChange={handleChange} style={styles.textarea} />
+    </Col>
 <Col>
   <Label>Uống lần đầu (thời gian)</Label>
   <Input
