@@ -802,9 +802,11 @@ function exportExcel() {
                 <td style={styles.td}><Select name="ponv.p7_24.severity" value={deepGet(form, "ponv.p7_24.severity") || ""} onChange={handleChange} options={["", "1", "2", "3", "4"]} /></td>
                 <td style={styles.td}><Select name="ponv.p_gt24.severity" value={deepGet(form, "ponv.p_gt24.severity") || ""} onChange={handleChange} options={["", "1", "2", "3", "4"]} /></td>
               </tr>
+			<tr>
+			<td style={styles.tdLabel}><b>Mức độ buồn nôn – nôn (chấm điểm 1-4):</b></n> Điểm: 1.Buồn nôn nhẹ (cảm giác lợm giọng) || 2.Buồn nôn nặng (muốn nôn nhưng không nôn được) || 3.Nôn khan hoặc nôn thực sự < 2 lần/giai đoạn  || 4.Nôn thực sự ≥ 2 lần/ giai đoạn)</td>	
+			</tr>
             </tbody>
           </table>
-		<Row><b>Mức độ buồn nôn – nôn (chấm điểm 1-4):</b></n> Điểm: 1.Buồn nôn nhẹ (cảm giác lợm giọng) || 2.Buồn nôn nặng (muốn nôn nhưng không nôn được) || 3.Nôn khan hoặc nôn thực sự < 2 lần/giai đoạn  || 4.Nôn thực sự ≥ 2 lần/ giai đoạn)</Row>	
         </Card>
 
         {/* Clinical - smaller cells like PONV (4 columns with header) */}
