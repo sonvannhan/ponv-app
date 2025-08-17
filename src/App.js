@@ -364,12 +364,9 @@ export default function App() {
   }
 
   async function handleDelete(id) {
-  const confirmed = window.confirm("Bạn có chắc muốn xóa bệnh nhân này?");
-  if (!confirmed) return;
-
   const password = prompt("Nhập mật khẩu để xác nhận xóa:");
   if (password !== "123456") {  // ← Bạn có thể đổi mật khẩu tại đây
-    alert("Sai mật khẩu. Không thể xóa.");
+    alert("Không thể xóa. Cần nhập đúng mật khẩu.");
     return;
   }
 
