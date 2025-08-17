@@ -804,7 +804,7 @@ function exportExcel() {
               </tr>
             </tbody>
           </table>
-		<div><b>Mức độ buồn nôn – nôn (chấm điểm 1-4):</b></n> Điểm: 1.Buồn nôn nhẹ (cảm giác lợm giọng) || 2.Buồn nôn nặng (muốn nôn nhưng không nôn được) || 3.Nôn khan hoặc nôn thực sự < 2 lần/giai đoạn  || 4.Nôn thực sự ≥ 2 lần/ giai đoạn)</div>	
+		<Row><b>Mức độ buồn nôn – nôn (chấm điểm 1-4):</b></n> Điểm: 1.Buồn nôn nhẹ (cảm giác lợm giọng) || 2.Buồn nôn nặng (muốn nôn nhưng không nôn được) || 3.Nôn khan hoặc nôn thực sự < 2 lần/giai đoạn  || 4.Nôn thực sự ≥ 2 lần/ giai đoạn)</Row>	
         </Card>
 
         {/* Clinical - smaller cells like PONV (4 columns with header) */}
