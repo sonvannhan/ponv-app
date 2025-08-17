@@ -694,7 +694,7 @@ function exportExcel() {
 </Col>
 	<Col>
         <Label>Ghi chú nhịn ăn (nếu có)</Label>
-        <textarea name="MealTimenotes" value={form.MealTimenotes || ""} onChange={handleChange} style={styles.textarea, minHeight: 36, height: "auto"} />
+        <textarea name="MealTimenotes" value={form.MealTimenotes || ""} onChange={handleChange} style={{ ...styles.textarea, minHeight: 36, height: "auto" }} />
     </Col>
 <Col>
   <Label>Uống lần đầu (thời gian)</Label>
