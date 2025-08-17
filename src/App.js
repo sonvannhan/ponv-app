@@ -664,7 +664,7 @@ function exportExcel() {
 		      <Label>Giờ rút NKQ (24h)</Label>
 		      <Input
 		        name="extubationTime"
-		        type="text"
+		        type="number"
 		        placeholder="HH:MM"
 		        value={form.extubationTime || ""}
 		        onChange={handleChange}
@@ -693,10 +693,10 @@ function exportExcel() {
         {/* Intra / Postop */}
         <Card title="Trong mổ-Sau mổ & Giảm đau">
         <Row>
-		<Col><Label>Tổng Liều Fentanyl (mcg)</Label><Input name="op.FentanylDoseMcg" value={deepGet(form, "op.FentanylDoseMcg") || ""} onChange={handleChange} /></Col>
-		<Col><Label>Tổng Liều Fresofol (mg)</Label><Input name="op.FresofolDoseMg" value={deepGet(form, "op.FresofolDoseMg") || ""} onChange={handleChange} /></Col>
-		<Col><Label>Tổng Liều Rocuronium (mg)</Label><Input name="op.RocuroniumDoseMg" value={deepGet(form, "op.RocuroniumDoseMg") || ""} onChange={handleChange} /></Col>
-		<Col><Label>Tổng Liều Sevorane </Label><Input name="op.SevoraneDose" value={deepGet(form, "op.SevoraneDose") || ""} onChange={handleChange} /></Col>
+		<Col><Label>Tổng Liều Fentanyl (mcg)</Label><Input name="op.FentanylDoseMcg" type="number" value={deepGet(form, "op.FentanylDoseMcg") || ""} onChange={handleChange} /></Col>
+		<Col><Label>Tổng Liều Fresofol (mg)</Label><Input name="op.FresofolDoseMg" type="number" value={deepGet(form, "op.FresofolDoseMg") || ""} onChange={handleChange} /></Col>
+		<Col><Label>Tổng Liều Rocuronium (mg)</Label><Input name="op.RocuroniumDoseMg" type="number" value={deepGet(form, "op.RocuroniumDoseMg") || ""} onChange={handleChange} /></Col>
+		<Col><Label>Tổng Liều Sevorane </Label><Input name="op.SevoraneDose" type="number" value={deepGet(form, "op.SevoraneDose") || ""} onChange={handleChange} /></Col>
 		
 			</Row>
 			<Row>
