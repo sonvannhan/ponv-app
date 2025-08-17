@@ -664,7 +664,7 @@ function exportExcel() {
 		      <Label>Giờ rút NKQ (24h)</Label>
 		      <Input
 		        name="extubationTime"
-		        type="number"
+		        type="text"
 		        placeholder="HH:MM"
 		        value={form.extubationTime || ""}
 		        onChange={handleChange}
