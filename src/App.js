@@ -403,6 +403,10 @@ function exportExcel() {
       "Giờ rút NKQ",
       "Lần ăn cuối",
       "Uống lần đầu",
+		"Tổng Liều Fentanyl (mcg)",
+		"Tổng Liều Fresofol (mg)",
+		"Tổng Liều Rocuronium (mg)",
+		"Tổng Liều Sevorane",
       "Máu mất trong mổ (ml)",
       "Dịch truyền trong mổ (ml)",
       "Số DL màng phổi",
@@ -489,6 +493,10 @@ function exportExcel() {
       "Lần ăn cuối": r.lastMealTime || "",
 	  "Ghi chú nhịn ăn (nếu có)": r.MealTimenotes || "",
       "Uống lần đầu": formatTimeForExport(r.firstDrinkTime),
+		"Tổng Liều Morphin (mg)": r.op?.FentanylDoseMcg || "",
+		"Tổng Liều Fresofol (mg)": r.op?.FresofolDoseMg || "",
+		"Tổng Liều Rocuronium (mg)": r.op?.RocuroniumDoseMg || "",
+		"Tổng Liều Sevorane (mg)": r.op?.SevoraneDose || "",
       "Máu mất trong mổ (ml)": r.bloodLossMl || "",
       "Dịch truyền trong mổ (ml)": r.fluidsMl || "",
       "Số DL màng phổi": r.chestDrainCount || "",
@@ -677,7 +685,14 @@ function exportExcel() {
 
         {/* Intra / Postop */}
         <Card title="Trong mổ-Sau mổ & Giảm đau">
-          <Row>
+        <Row>
+		<Col><Label>Tổng Liều Fentanyl (mcg)</Label><Input name="op.FentanylDoseMcg" value={deepGet(form, "op.FentanylDoseMcg") || ""} onChange={handleChange} /></Col>
+		<Col><Label>Tổng Liều Fresofol (mg)</Label><Input name="op.FresofolDoseMg" value={deepGet(form, "op.FresofolDoseMg") || ""} onChange={handleChange} /></Col>
+		<Col><Label>Tổng Liều Rocuronium (mg)</Label><Input name="op.RocuroniumDoseMg" value={deepGet(form, "op.RocuroniumDoseMg") || ""} onChange={handleChange} /></Col>
+		<Col><Label>Tổng Liều Sevorane </Label><Input name="op.SevoraneDose" value={deepGet(form, "op.SevoraneDose") || ""} onChange={handleChange} /></Col>
+		
+			</Row>
+			<Row>
             <Col>
               <Label>Máu mất trong mổ (ml)</Label>
               <Input name="bloodLossMl" type="number" value={form.bloodLossMl || ""} onChange={handleChange} />
@@ -850,7 +865,7 @@ function exportExcel() {
               ))}
 
               <tr>
-                <td style={styles.tdLabel}>Liều vasopressors</td>
+                <td style={styles.tdLabel}>Liều Vận mạch</td>
                 <td style={styles.td}><Input name="meds.vasopressors.p0_6" value={deepGet(form, "meds.vasopressors.p0_6") || ""} onChange={handleChange} /></td>
                 <td style={styles.td}><Input name="meds.vasopressors.p7_24" value={deepGet(form, "meds.vasopressors.p7_24") || ""} onChange={handleChange} /></td>
                 <td style={styles.td}><Input name="meds.vasopressors.day2" value={deepGet(form, "meds.vasopressors.day2") || ""} onChange={handleChange} /></td>
