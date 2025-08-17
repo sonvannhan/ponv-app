@@ -804,6 +804,7 @@ function exportExcel() {
               </tr>
             </tbody>
           </table>
+		<div><b>Mức độ buồn nôn – nôn (chấm điểm 1-4):</b></n> Điểm: 1.Buồn nôn nhẹ (cảm giác lợm giọng) || 2.Buồn nôn nặng (muốn nôn nhưng không nôn được) || 3.Nôn khan hoặc nôn thực sự < 2 lần/giai đoạn  || 4.Nôn thực sự ≥ 2 lần/ giai đoạn)</div>	
         </Card>
 
         {/* Clinical - smaller cells like PONV (4 columns with header) */}
@@ -821,24 +822,24 @@ function exportExcel() {
             <tbody>
               <tr>
                 <td style={styles.tdLabel}>VAS</td>
-                <td style={styles.td}><Input name="clinical.vas.p0_6" value={deepGet(form, "clinical.vas.p0_6") || ""} onChange={handleChange} /></td>
-                <td style={styles.td}><Input name="clinical.vas.p7_24" value={deepGet(form, "clinical.vas.p7_24") || ""} onChange={handleChange} /></td>
-                <td style={styles.td}><Input name="clinical.vas.day2" value={deepGet(form, "clinical.vas.day2") || ""} onChange={handleChange} /></td>
-                <td style={styles.td}><Input name="clinical.vas.day3" value={deepGet(form, "clinical.vas.day3") || ""} onChange={handleChange} /></td>
+                <td style={styles.td}><Input type="number" name="clinical.vas.p0_6" value={deepGet(form, "clinical.vas.p0_6") || ""} onChange={handleChange} /></td>
+                <td style={styles.td}><Input type="number" name="clinical.vas.p7_24" value={deepGet(form, "clinical.vas.p7_24") || ""} onChange={handleChange} /></td>
+                <td style={styles.td}><Input type="number" name="clinical.vas.day2" value={deepGet(form, "clinical.vas.day2") || ""} onChange={handleChange} /></td>
+                <td style={styles.td}><Input type="number" name="clinical.vas.day3" value={deepGet(form, "clinical.vas.day3") || ""} onChange={handleChange} /></td>
               </tr>
               <tr>
                 <td style={styles.tdLabel}>HA (max)</td>
-                <td style={styles.td}><Input name="clinical.bp.p0_6" value={deepGet(form, "clinical.bp.p0_6") || ""} onChange={handleChange} /></td>
-                <td style={styles.td}><Input name="clinical.bp.p7_24" value={deepGet(form, "clinical.bp.p7_24") || ""} onChange={handleChange} /></td>
-                <td style={styles.td}><Input name="clinical.bp.day2" value={deepGet(form, "clinical.bp.day2") || ""} onChange={handleChange} /></td>
-                <td style={styles.td}><Input name="clinical.bp.day3" value={deepGet(form, "clinical.bp.day3") || ""} onChange={handleChange} /></td>
+                <td style={styles.td}><Input type="number" name="clinical.bp.p0_6" value={deepGet(form, "clinical.bp.p0_6") || ""} onChange={handleChange} /></td>
+                <td style={styles.td}><Input type="number" name="clinical.bp.p7_24" value={deepGet(form, "clinical.bp.p7_24") || ""} onChange={handleChange} /></td>
+                <td style={styles.td}><Input type="number" name="clinical.bp.day2" value={deepGet(form, "clinical.bp.day2") || ""} onChange={handleChange} /></td>
+                <td style={styles.td}><Input type="number" name="clinical.bp.day3" value={deepGet(form, "clinical.bp.day3") || ""} onChange={handleChange} /></td>
               </tr>
               <tr>
                 <td style={styles.tdLabel}>Nhiệt (max)</td>
-                <td style={styles.td}><Input name="clinical.temp.p0_6" value={deepGet(form, "clinical.temp.p0_6") || ""} onChange={handleChange} /></td>
-                <td style={styles.td}><Input name="clinical.temp.p7_24" value={deepGet(form, "clinical.temp.p7_24") || ""} onChange={handleChange} /></td>
-                <td style={styles.td}><Input name="clinical.temp.day2" value={deepGet(form, "clinical.temp.day2") || ""} onChange={handleChange} /></td>
-                <td style={styles.td}><Input name="clinical.temp.day3" value={deepGet(form, "clinical.temp.day3") || ""} onChange={handleChange} /></td>
+                <td style={styles.td}><Input type="number" name="clinical.temp.p0_6" value={deepGet(form, "clinical.temp.p0_6") || ""} onChange={handleChange} /></td>
+                <td style={styles.td}><Input type="number" name="clinical.temp.p7_24" value={deepGet(form, "clinical.temp.p7_24") || ""} onChange={handleChange} /></td>
+                <td style={styles.td}><Input type="number" name="clinical.temp.day2" value={deepGet(form, "clinical.temp.day2") || ""} onChange={handleChange} /></td>
+                <td style={styles.td}><Input type="number" name="clinical.temp.day3" value={deepGet(form, "clinical.temp.day3") || ""} onChange={handleChange} /></td>
               </tr>
             </tbody>
           </table>
