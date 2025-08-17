@@ -939,8 +939,8 @@ const styles = {
   smallBtn: { padding: "6px 10px", background: "#2563eb", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", marginRight: 6 },
   smallBtnDanger: { padding: "6px 10px", background: "#ef4444", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer" },
 
-  input: { width: "100%", padding: "8px 10px", borderRadius: 8, border: "1px solid rgba(99, 102, 241, 0.08)" },
-  textarea: { width: "100%", padding: 8, borderRadius: 8, border: "1px solid rgba(99, 102, 241, 0.08)", minHeight: 80 },
+  input: { width: "100%", padding: "8px 10px", borderRadius: 8, border: "1px solid #d1d5db" },
+  textarea: { width: "100%", padding: 8, borderRadius: 8, border: "1px solid #d1d5db", minHeight: 80 },
 
   card: { background: "#fff", border: "1px solid #e6eef6", borderRadius: 10, padding: 12, marginBottom: 12 },
   cardTitle: { fontWeight: 700, marginBottom: 8, paddingLeft: 8, borderLeft: "4px solid #2563eb" },
