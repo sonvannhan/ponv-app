@@ -593,7 +593,7 @@ function exportExcel() {
   return (
     <div style={styles.container}>
       <h1 style={styles.title}>Theo dõi Nôn/Buồn nôn sau mổ (PONV)</h1>
-	<h2>ĐV Hồi sức sau mổ - Khoa GMHS - BV Phổi TƯ</h2>
+	<h2><i>ĐV Hồi sức sau mổ - Khoa GMHS - BV Phổi TƯ</i></h2>
 
       {/* Toolbar: search, date range, actions */}
       <div style={styles.toolbar}>
