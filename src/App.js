@@ -481,9 +481,9 @@ function exportExcel() {
       "Phương pháp giải giãn cơ",
       "Phương thức giảm đau",
       "Thuốc giảm đau 1",
-      "Liều/Nồng độ 1",
+      "Tốc độ truyền (ml/h)",
       "Thuốc giảm đau 2",
-      "Liều/Nồng độ 2",
+      "Liều khác nếu có (Ghi rõ)",
       "Dùng Morphin",
       "Liều Morphin (mg)",
       "Tiền sử say tàu xe",
@@ -573,9 +573,9 @@ function exportExcel() {
       "Phương pháp giải giãn cơ": r.reversalAgent || "",
       "Phương thức giảm đau": r.postop?.analgesiaMethod || "",
       "Thuốc giảm đau 1": r.postop?.analgesic1 || "",
-      "Liều/Nồng độ 1": r.postop?.analgesic1Conc || "",
+      "Tốc độ truyền (ml/h)": r.postop?.analgesic1Conc || "",
       "Thuốc giảm đau 2": r.postop?.analgesic2 || "",
-      "Liều/Nồng độ 2": r.postop?.analgesic2Conc || "",
+      "Liều khác nếu có (Ghi rõ)": r.postop?.analgesic2Conc || "",
       "Dùng Morphin": r.postop?.morphineUse ? "Có" : "Không",
       "Liều Morphin (mg)": r.postop?.morphineDoseMg || "",
       "Tiền sử say tàu xe": r.history?.motionSickness ? "Có" : "Không",
@@ -876,16 +876,17 @@ function exportExcel() {
               <Label>Thuốc 1</Label>
               <Select name="postop.analgesic1" value={deepGet(form, "postop.analgesic1") || ""} onChange={handleChange} options={["", "Bupivacain", "Fentanyl", "Morphin", "Ketamin", "Khác"]} />
             </Col>
-            <Col>
-              <Label>Liều / Nồng độ 1</Label>
-              <Input name="postop.analgesic1Conc" value={deepGet(form, "postop.analgesic1Conc") || ""} onChange={handleChange} />
-            </Col>
+            
             <Col>
               <Label>Thuốc 2</Label>
               <Select name="postop.analgesic2" value={deepGet(form, "postop.analgesic2") || ""} onChange={handleChange} options={["", "Bupivacain", "Fentanyl", "Morphin", "Ketamin", "Khác"]} />
             </Col>
             <Col>
-              <Label>Liều / Nồng độ 2</Label>
+              <Label>Tốc độ truyền (ml/h)</Label>
+              <Input name="postop.analgesic1Conc" type="number" value={deepGet(form, "postop.analgesic1Conc") || ""} onChange={handleChange} />
+            </Col>
+            <Col>
+              <Label>Liều khác nếu có (Ghi rõ)</Label>
               <Input name="postop.analgesic2Conc" value={deepGet(form, "postop.analgesic2Conc") || ""} onChange={handleChange} />
             </Col>
             <Col>
