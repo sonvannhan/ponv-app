@@ -39,6 +39,8 @@ const DEFAULT_FORM = {
   name: "",
   age: "",
   gender: "", // "Nam" | "Nữ"
+  diagnosis: "", // Chẩn đoán
+  procedure: "", // Phương pháp phẫu thuật
   surgeryDate: "", // YYYY-MM-DD
   surgeryTime: "", // HH:MM (24h)
   pacuOutTime: "", // HH:MM
@@ -396,6 +398,42 @@ export default function App() {
     return nameOk && fromOk && toOk;
   });
 
+// import from excel
+function handleImportFromExcel(e) {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (evt) => {
+    const data = new Uint8Array(evt.target.result);
+    const workbook = XLSX.read(data, { type: "array" });
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const rows = XLSX.utils.sheet_to_json(sheet);
+
+    const parsed = rows.map((row, i) => ({
+      name: row["Họ tên BN"] || "",
+      age: row["Tuổi"] || "",
+      surgeryDate: formatDate(row["Ngày PT"] || row["Ngày mổ"]),
+      surgeryTime: normalizeTimeInput(row["Giờ PT"]),
+      diagnosis: row["Chẩn đoán"] || "",
+      procedure: row["Phương pháp phẫu thuật"] || "",
+    }));
+
+    setImportedData(parsed);
+    setShowPreview(true);
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+// Hỗ trợ định dạng
+function formatDate(val) {
+  if (!val) return "";
+  if (typeof val === "string") return val.slice(0, 10);
+  const d = new Date(val);
+  if (isNaN(d.getTime())) return "";
+  return d.toISOString().slice(0, 10);
+}
+
   // export to excel, flatten rows
 function exportExcel() {
   try {
@@ -615,6 +653,17 @@ function exportExcel() {
         <button style={styles.buttonSecondary} onClick={clearFilters}>Xóa lọc</button>
         <button style={styles.button} onClick={exportExcel}>Xuất Excel</button>
         <button style={styles.buttonSecondary} onClick={() => { setForm(clone(DEFAULT_FORM)); setEditId(null); }}>Tạo mới</button>
+      //Nút import excel
+        <input
+  type="file"
+  accept=".xlsx,.csv"
+  onChange={handleImportFromExcel}
+  id="importFile"
+  style={{ display: "none" }}
+/>
+<label htmlFor="importFile">
+  <button style={styles.buttonSecondary}>Import Excel</button>
+</label>
       </div>
 
       {/* FORM */}
@@ -639,6 +688,20 @@ function exportExcel() {
 		      <Label>Ngày phẫu thuật</Label>
 		      <Input name="surgeryDate" type="date" value={form.surgeryDate || ""} onChange={handleChange} />
 		    </Col>
+          </Row>
+          
+  <Row>
+    <Col>
+      <Label>Chẩn đoán</Label>
+      <Input name="diagnosis" value={form.diagnosis || ""} onChange={handleChange} />
+    </Col>
+    <Col>
+      <Label>Phương pháp phẫu thuật</Label>
+      <Input name="procedure" value={form.procedure || ""} onChange={handleChange} />
+    </Col>
+  </Row>
+          
+        <Row>
 		    <Col>
 		      <Label>Giờ phẫu thuật (24h)</Label>
 		      <Input
