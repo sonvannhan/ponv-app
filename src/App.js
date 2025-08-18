@@ -948,21 +948,24 @@ function exportExcel() {
            <thead>
   <tr>
     <th style={{ ...styles.thCompact, minWidth: 160 }}>Họ tên</th>
-	<th style={{ ...styles.thCompact, minWidth: 90 }}>Hành động</th>
+	<th style={{ ...styles.thCompact, minWidth: 50 }}>Sửa</th>
     <th style={{ ...styles.thCompact, minWidth: 90 }}>Ngày mổ</th>
-    <th style={{ ...styles.thCompact, minWidth: 50 }}>0-6h PONV</th>    
+    <th style={{ ...styles.thCompact, minWidth: 50 }}>0-6h PONV</th>
+	<th style={{ ...styles.thCompact, minWidth: 50 }}>Xóa</th>
   </tr>
 </thead>
 <tbody>
   {filtered.map((r) => (
     <tr key={r.id}>
-      <td style={styles.td}>{r.name}</td>
-      <td style={styles.td}>{r.surgeryDate}</td>
+      <td style={styles.td}>{r.name}</td>      
 	  <td style={styles.td}>
-        <button style={styles.smallBtn} onClick={() => startEdit(r)}>Sửa</button>
-        <button style={styles.smallBtnDanger} onClick={() => handleDelete(r.id)}>Xóa</button>
+        <button style={styles.smallBtn} onClick={() => startEdit(r)}>Sửa</button>        
       </td>
-      <td style={styles.tdCenter}>{deepGet(r, "ponv.p0_6.present") ? "Có" : "Không"}</td>      
+	  <td style={styles.td}>{r.surgeryDate}</td>
+      <td style={styles.tdCenter}>{deepGet(r, "ponv.p0_6.present") ? "Có" : "Không"}</td>
+	<td style={styles.td}>
+       <button style={styles.smallBtnDanger} onClick={() => handleDelete(r.id)}>Xóa</button>
+      </td>
     </tr>
   ))}
   {filtered.length === 0 && (
