@@ -271,9 +271,6 @@ export default function App() {
   const [form, setForm] = useState(clone(DEFAULT_FORM));
   const [records, setRecords] = useState([]);
   const [editId, setEditId] = useState(null);
-const [importedData, setImportedData] = useState([]);
-const [showPreview, setShowPreview] = useState(false);
-const importInputRef = useRef();
 
   // filters
   const [searchName, setSearchName] = useState("");
@@ -596,69 +593,6 @@ function exportExcel() {
   }
 }  //End function exportExcel
 
-// import from excel
-function handleImportFromExcel(e) {
-  const file = e.target.files?.[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = (evt) => {
-    const data = new Uint8Array(evt.target.result);
-    const workbook = XLSX.read(data, { type: "array" });
-    const sheet = workbook.Sheets[workbook.SheetNames[0]];
-    const rows = XLSX.utils.sheet_to_json(sheet);
-
-    const parsed = rows.map((row, i) => ({
-      name: row["Họ tên BN"] || "",
-      age: row["Tuổi"] || "",
-      surgeryDate: formatDate(row["Ngày PT"] || row["Ngày mổ"]),
-      surgeryTime: normalizeTimeInput(row["Giờ PT"]),
-      diagnosis: row["Chẩn đoán"] || "",
-      procedure: row["Phương pháp phẫu thuật"] || "",
-    }));
-
-    setImportedData(parsed);
-    setShowPreview(true);
-  };
-  reader.readAsArrayBuffer(file);
-}
-
-async function saveImportedToFirestore() {
-  try {
-    for (const row of importedData) {
-      const fullRecord = mergeDefaults({
-        ...row,
-        timeSaved: new Date().toISOString(),
-      });
-      await addDoc(colRef, fullRecord);
-    }
-
-    alert(`Đã lưu ${importedData.length} dòng vào Firestore.`);
-    setImportedData([]);
-    setShowPreview(false);
-    await loadRecords();
-  } catch (err) {
-    console.error("Lỗi khi lưu import:", err);
-    alert("Lỗi khi lưu dữ liệu từ file.");
-  }
-}
-function handleImportClick() {
-  if (importInputRef.current) {
-    importInputRef.current.click(); // Gọi click để mở file picker
-  }
-}
-
-// Hỗ trợ định dạng
-function formatDate(val) {
-  if (!val) return "";
-  if (typeof val === "string") return val.slice(0, 10);
-  const d = new Date(val);
-  if (isNaN(d.getTime())) return "";
-  return d.toISOString().slice(0, 10);
-}
-
-
-
   /* ================= Render JSX ================= */
   return (
     <div style={styles.container}>
@@ -685,17 +619,6 @@ function formatDate(val) {
         <button style={styles.buttonSecondary} onClick={clearFilters}>Xóa lọc</button>
         <button style={styles.button} onClick={exportExcel}>Xuất Excel</button>
         <button style={styles.buttonSecondary} onClick={() => { setForm(clone(DEFAULT_FORM)); setEditId(null); }}>Tạo mới</button>
-    
-<button style={styles.buttonSecondary} onClick={handleImportClick}>Import Excel</button>
-<input
-  type="file"
-  accept=".xlsx,.csv"
-  onChange={handleImportFromExcel}
-  ref={importInputRef}
-  style={{ display: "none" }}
-/>
-
-
       </div>
 
       {/* FORM */}
@@ -1017,43 +940,7 @@ function formatDate(val) {
           <button type="button" style={styles.button} onClick={handleSave}>{editId ? "Cập nhật" : "Lưu"}</button>
           <button type="button" style={styles.buttonSecondary} onClick={() => { setForm(clone(DEFAULT_FORM)); setEditId(null); }}>Reset</button>
         </div>
-      </form>
-
-      {/* Preview */}
- {showPreview && importedData.length > 0 && (
-  <Card title={`Preview ${importedData.length} dòng từ Excel`}>
-    <table style={styles.tableCompact}>
-      <thead>
-        <tr>
-          <th style={styles.thCompact}>Họ tên</th>
-          <th style={styles.thCompact}>Tuổi</th>
-          <th style={styles.thCompact}>Ngày mổ</th>
-          <th style={styles.thCompact}>Giờ mổ</th>
-          <th style={styles.thCompact}>Chẩn đoán</th>
-          <th style={styles.thCompact}>Phẫu thuật</th>
-        </tr>
-      </thead>
-      <tbody>
-        {importedData.map((row, idx) => (
-          <tr key={idx}>
-            <td style={styles.td}>{row.name}</td>
-            <td style={styles.td}>{row.age}</td>
-            <td style={styles.td}>{row.surgeryDate}</td>
-            <td style={styles.td}>{row.surgeryTime}</td>
-            <td style={styles.td}>{row.diagnosis}</td>
-            <td style={styles.td}>{row.procedure}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-
-    <div style={{ marginTop: 8 }}>
-      <button style={styles.button} onClick={saveImportedToFirestore}>Lưu vào Firestore</button>
-      <button style={styles.buttonSecondary} onClick={() => { setImportedData([]); setShowPreview(false); }}>Hủy</button>
-    </div>
-  </Card>
-)}
-
+      </form> 
 	{/* Records table */}
       <Card title={`Danh sách bệnh nhân (${filtered.length})`}>
         <div style={{ overflowX: "auto" }}>
