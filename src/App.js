@@ -1108,17 +1108,8 @@ inputGroup: {  display: "flex",  flexDirection: "column",  gap: 4,  marginBottom
   tdLabel: { padding: "6px 8px", borderRight: "1px solid #e6eef6", borderBottom: "1px solid #e6eef6", fontWeight: 500 },
   tdCenter: { padding: "6px 8px", borderRight: "1px solid #e6eef6", borderBottom: "1px solid #e6eef6", textAlign: "center" },
 
-  form: { display: "grid", gap: 8 ,gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", alignItems: "start" },
+  form: { display: "grid", gap: 8 ,gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))" },
   smallLabel: { fontSize: 12, color: "#334155", display: "block", marginBottom: 4 },
-	// Thêm media query cho mobile
-'@media (max-width: 768px)': {
-  form: {
-    gridTemplateColumns: "1fr" // Chuyển thành 1 cột trên mobile
-  },
-  tableCompact: {
-    display: "block",
-    overflowX: "auto" // Cho phép scroll ngang trên mobile
-  }
-}
+	
 };
 
