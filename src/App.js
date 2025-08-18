@@ -322,37 +322,25 @@ const [showPreview, setShowPreview] = useState(false);
 
   async function handleSave(e) {
   if (e && e.preventDefault) e.preventDefault();
-  if (!form.name) { alert("Vui lòng nhập Họ tên"); return; }
-
-  // clone form then normalize time-like fields to HH:MM
-  const payload = clone(form);
-
-  // Normalize commonly used time fields so Firestore stores consistent "HH:MM" strings
-  payload.surgeryTime = formatTimeForExport(payload.surgeryTime);
-  payload.pacuOutTime = formatTimeForExport(payload.pacuOutTime);
-  payload.extubationTime = formatTimeForExport(payload.extubationTime);
-  //payload.lastMealTime = formatTimeForExport(payload.lastMealTime);
-  payload.firstDrinkTime = formatTimeForExport(payload.firstDrinkTime);
-
-  // also ensure PONV times (if user put strange values)
-  if (payload.ponv) {
-    if (payload.ponv.p0_6) payload.ponv.p0_6.times = payload.ponv.p0_6.times || "";
-    if (payload.ponv.p7_24) payload.ponv.p7_24.times = payload.ponv.p7_24.times || "";
-    if (payload.ponv.p_gt24) payload.ponv.p_gt24.times = payload.ponv.p_gt24.times || "";
+  if (!form.name) {
+    alert("Vui lòng nhập Họ tên");
+    return;
   }
 
+  const payload = clone(form);
   payload.timeSaved = new Date().toISOString();
 
   try {
     if (editId) {
-      // merge so old fields not lost
       await setDoc(doc(db, "ponv_records", editId), payload, { merge: true });
       setEditId(null);
     } else {
       await addDoc(colRef, payload);
     }
+
     setForm(clone(DEFAULT_FORM));
     await loadRecords();
+    window.scrollTo({ top: 0, behavior: "smooth" }); // 👈 Scroll về đầu form
     alert("Đã lưu");
   } catch (err) {
     console.error("save error:", err);
