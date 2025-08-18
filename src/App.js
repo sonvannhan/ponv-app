@@ -1073,7 +1073,7 @@ function exportExcel() {
 /* ================= Styles ================= */
 const styles = {
   container: { padding: 16, maxWidth: 1200, margin: "0 auto", fontFamily: "system-ui, -apple-system, 'Segoe UI', Roboto, Arial" },
-  title: { fontSize: 22, marginBottom: 12 },
+  title: { fontSize: 18, marginBottom: 8 },
   toolbar: { display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", marginBottom: 12 },
   button: { padding: "8px 12px", background: "#2563eb", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" },
   buttonSecondary: { padding: "8px 12px", background: "#e2e8f0", color: "#111827", border: "none", borderRadius: 8, cursor: "pointer" },
