@@ -675,8 +675,8 @@ function exportExcel() {
         <button style={styles.buttonSecondary} onClick={clearFilters}>Xóa lọc</button>
         <button style={styles.button} onClick={exportExcel}>Xuất Excel</button>
         <button style={styles.buttonSecondary} onClick={() => { setForm(clone(DEFAULT_FORM)); setEditId(null); }}>Tạo mới</button>
-      //Nút import excel
-        <input
+    {/* Nút Import Excel */}
+<input
   type="file"
   accept=".xlsx,.csv"
   onChange={handleImportFromExcel}
@@ -684,8 +684,9 @@ function exportExcel() {
   style={{ display: "none" }}
 />
 <label htmlFor="importFile">
-  <button style={styles.buttonSecondary}>Import Excel</button>
+  <button type="button" style={styles.buttonSecondary}>Import Excel</button>
 </label>
+
       </div>
 
       {/* FORM */}
