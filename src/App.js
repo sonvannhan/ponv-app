@@ -389,63 +389,7 @@ const [showPreview, setShowPreview] = useState(false);
     return nameOk && fromOk && toOk;
   });
 
-// import from excel
-function handleImportFromExcel(e) {
-  const file = e.target.files?.[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = (evt) => {
-    const data = new Uint8Array(evt.target.result);
-    const workbook = XLSX.read(data, { type: "array" });
-    const sheet = workbook.Sheets[workbook.SheetNames[0]];
-    const rows = XLSX.utils.sheet_to_json(sheet);
-
-    const parsed = rows.map((row, i) => ({
-      name: row["Họ tên BN"] || "",
-      age: row["Tuổi"] || "",
-      surgeryDate: formatDate(row["Ngày PT"] || row["Ngày mổ"]),
-      surgeryTime: normalizeTimeInput(row["Giờ PT"]),
-      diagnosis: row["Chẩn đoán"] || "",
-      procedure: row["Phương pháp phẫu thuật"] || "",
-    }));
-
-    setImportedData(parsed);
-    setShowPreview(true);
-  };
-  reader.readAsArrayBuffer(file);
-}
-
-async function saveImportedToFirestore() {
-  try {
-    for (const row of importedData) {
-      const fullRecord = mergeDefaults({
-        ...row,
-        timeSaved: new Date().toISOString(),
-      });
-      await addDoc(colRef, fullRecord);
-    }
-
-    alert(`Đã lưu ${importedData.length} dòng vào Firestore.`);
-    setImportedData([]);
-    setShowPreview(false);
-    await loadRecords();
-  } catch (err) {
-    console.error("Lỗi khi lưu import:", err);
-    alert("Lỗi khi lưu dữ liệu từ file.");
-  }
-}
-
-// Hỗ trợ định dạng
-function formatDate(val) {
-  if (!val) return "";
-  if (typeof val === "string") return val.slice(0, 10);
-  const d = new Date(val);
-  if (isNaN(d.getTime())) return "";
-  return d.toISOString().slice(0, 10);
-}
-
-  // export to excel, flatten rows
+// export to excel, flatten rows
 function exportExcel() {
   try {
     const headers = [
@@ -648,7 +592,64 @@ function exportExcel() {
     console.error("exportExcel error:", err);
     alert("Lỗi khi xuất Excel, xem console");
   }
+}  //End function exportExcel
+
+// import from excel
+function handleImportFromExcel(e) {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (evt) => {
+    const data = new Uint8Array(evt.target.result);
+    const workbook = XLSX.read(data, { type: "array" });
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const rows = XLSX.utils.sheet_to_json(sheet);
+
+    const parsed = rows.map((row, i) => ({
+      name: row["Họ tên BN"] || "",
+      age: row["Tuổi"] || "",
+      surgeryDate: formatDate(row["Ngày PT"] || row["Ngày mổ"]),
+      surgeryTime: normalizeTimeInput(row["Giờ PT"]),
+      diagnosis: row["Chẩn đoán"] || "",
+      procedure: row["Phương pháp phẫu thuật"] || "",
+    }));
+
+    setImportedData(parsed);
+    setShowPreview(true);
+  };
+  reader.readAsArrayBuffer(file);
 }
+
+async function saveImportedToFirestore() {
+  try {
+    for (const row of importedData) {
+      const fullRecord = mergeDefaults({
+        ...row,
+        timeSaved: new Date().toISOString(),
+      });
+      await addDoc(colRef, fullRecord);
+    }
+
+    alert(`Đã lưu ${importedData.length} dòng vào Firestore.`);
+    setImportedData([]);
+    setShowPreview(false);
+    await loadRecords();
+  } catch (err) {
+    console.error("Lỗi khi lưu import:", err);
+    alert("Lỗi khi lưu dữ liệu từ file.");
+  }
+}
+
+// Hỗ trợ định dạng
+function formatDate(val) {
+  if (!val) return "";
+  if (typeof val === "string") return val.slice(0, 10);
+  const d = new Date(val);
+  if (isNaN(d.getTime())) return "";
+  return d.toISOString().slice(0, 10);
+}
+
 
 
   /* ================= Render JSX ================= */
@@ -677,7 +678,7 @@ function exportExcel() {
         <button style={styles.buttonSecondary} onClick={clearFilters}>Xóa lọc</button>
         <button style={styles.button} onClick={exportExcel}>Xuất Excel</button>
         <button style={styles.buttonSecondary} onClick={() => { setForm(clone(DEFAULT_FORM)); setEditId(null); }}>Tạo mới</button>
-    {/* Nút Import Excel */}
+    
 <input
   type="file"
   accept=".xlsx,.csv"
@@ -694,40 +695,7 @@ function exportExcel() {
       {/* FORM */}
       <form onSubmit={(e) => { e.preventDefault(); handleSave(e); }} style={styles.form}>
         {/* Patient info */}
-        {/* Patient info */}
-        {showPreview && importedData.length > 0 && (
-  <Card title={`Preview ${importedData.length} dòng từ Excel`}>
-    <table style={styles.tableCompact}>
-      <thead>
-        <tr>
-          <th style={styles.thCompact}>Họ tên</th>
-          <th style={styles.thCompact}>Tuổi</th>
-          <th style={styles.thCompact}>Ngày mổ</th>
-          <th style={styles.thCompact}>Giờ mổ</th>
-          <th style={styles.thCompact}>Chẩn đoán</th>
-          <th style={styles.thCompact}>Phẫu thuật</th>
-        </tr>
-      </thead>
-      <tbody>
-        {importedData.map((row, idx) => (
-          <tr key={idx}>
-            <td style={styles.td}>{row.name}</td>
-            <td style={styles.td}>{row.age}</td>
-            <td style={styles.td}>{row.surgeryDate}</td>
-            <td style={styles.td}>{row.surgeryTime}</td>
-            <td style={styles.td}>{row.diagnosis}</td>
-            <td style={styles.td}>{row.procedure}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-
-    <div style={{ marginTop: 10 }}>
-      <button style={styles.button} onClick={saveImportedToFirestore}>Lưu vào Firestore</button>
-      <button style={styles.buttonSecondary} onClick={() => { setImportedData([]); setShowPreview(false); }}>Hủy</button>
-    </div>
-  </Card>
-)}
+        {/* Patient info */}       
 		<Card title="Thông tin bệnh nhân">
 		  <Row>
 		    <Col>
@@ -1039,13 +1007,48 @@ function exportExcel() {
           </Row>
         </Card>
 
-        <div style={{ display: "flex", gap: 10 }}>
+        <div style={{ display: "flex", gap: 8 }}>
           <button type="button" style={styles.button} onClick={handleSave}>{editId ? "Cập nhật" : "Lưu"}</button>
           <button type="button" style={styles.buttonSecondary} onClick={() => { setForm(clone(DEFAULT_FORM)); setEditId(null); }}>Reset</button>
         </div>
       </form>
 
-      {/* Records table */}
+      {/* Preview */}
+ {showPreview && importedData.length > 0 && (
+  <Card title={`Preview ${importedData.length} dòng từ Excel`}>
+    <table style={styles.tableCompact}>
+      <thead>
+        <tr>
+          <th style={styles.thCompact}>Họ tên</th>
+          <th style={styles.thCompact}>Tuổi</th>
+          <th style={styles.thCompact}>Ngày mổ</th>
+          <th style={styles.thCompact}>Giờ mổ</th>
+          <th style={styles.thCompact}>Chẩn đoán</th>
+          <th style={styles.thCompact}>Phẫu thuật</th>
+        </tr>
+      </thead>
+      <tbody>
+        {importedData.map((row, idx) => (
+          <tr key={idx}>
+            <td style={styles.td}>{row.name}</td>
+            <td style={styles.td}>{row.age}</td>
+            <td style={styles.td}>{row.surgeryDate}</td>
+            <td style={styles.td}>{row.surgeryTime}</td>
+            <td style={styles.td}>{row.diagnosis}</td>
+            <td style={styles.td}>{row.procedure}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+
+    <div style={{ marginTop: 8 }}>
+      <button style={styles.button} onClick={saveImportedToFirestore}>Lưu vào Firestore</button>
+      <button style={styles.buttonSecondary} onClick={() => { setImportedData([]); setShowPreview(false); }}>Hủy</button>
+    </div>
+  </Card>
+)}
+
+	{/* Records table */}
       <Card title={`Danh sách bệnh nhân (${filtered.length})`}>
         <div style={{ overflowX: "auto" }}>
           <table style={styles.tableCompact}>
