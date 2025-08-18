@@ -1037,36 +1037,32 @@ function exportExcel() {
       <Card title={`Danh sách bệnh nhân (${filtered.length})`}>
         <div style={{ overflowX: "auto" }}>
           <table style={styles.tableCompact}>
-            <thead>
-              <tr>
-                <th style={styles.thCompact}>Họ tên</th>
-                <th style={styles.thCompact}>Ngày mổ</th>
-                <th style={styles.thCompact}>Giờ mổ</th>
-                <th style={styles.thCompact}>Giờ ra HS</th>
-                <th style={styles.thCompact}>0-6h PONV</th>
-                <th style={styles.thCompact}>7-24h PONV</th>
-                <th style={styles.thCompact}>&gt;24h</th>
-                <th style={styles.thCompact}>Hành động</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map(r => (
-                <tr key={r.id}>
-                  <td style={styles.td}>{r.name}</td>
-                  <td style={styles.td}>{r.surgeryDate}</td>
-                  <td style={styles.td}>{r.surgeryTime}</td>
-                  <td style={styles.td}>{r.pacuOutTime}</td>
-                  <td style={styles.tdCenter}>{deepGet(r, "ponv.p0_6.present") ? "Có" : "Không"}</td>
-                  <td style={styles.tdCenter}>{deepGet(r, "ponv.p7_24.present") ? "Có" : "Không"}</td>
-                  <td style={styles.tdCenter}>{deepGet(r, "ponv.p_gt24.present") ? "Có" : "Không"}</td>
-                  <td style={styles.td}>
-                    <button style={styles.smallBtn} onClick={() => startEdit(r)}>Sửa</button>
-                    <button style={styles.smallBtnDanger} onClick={() => handleDelete(r.id)}>Xóa</button>
-                  </td>
-                </tr>
-              ))}
-              {filtered.length === 0 && <tr><td style={styles.td} colSpan={8}>Không có dữ liệu</td></tr>}
-            </tbody>
+           <thead>
+  <tr>
+    <th style={{ ...styles.thCompact, minWidth: 160 }}>Họ tên</th>
+    <th style={{ ...styles.thCompact, minWidth: 110 }}>Ngày mổ</th>
+    <th style={{ ...styles.thCompact, minWidth: 100 }}>0-6h PONV</th>
+    <th style={{ ...styles.thCompact, minWidth: 100 }}>Hành động</th>
+  </tr>
+</thead>
+<tbody>
+  {filtered.map((r) => (
+    <tr key={r.id}>
+      <td style={styles.td}>{r.name}</td>
+      <td style={styles.td}>{r.surgeryDate}</td>
+      <td style={styles.tdCenter}>{deepGet(r, "ponv.p0_6.present") ? "Có" : "Không"}</td>
+      <td style={styles.td}>
+        <button style={styles.smallBtn} onClick={() => startEdit(r)}>Sửa</button>
+        <button style={styles.smallBtnDanger} onClick={() => handleDelete(r.id)}>Xóa</button>
+      </td>
+    </tr>
+  ))}
+  {filtered.length === 0 && (
+    <tr>
+      <td style={styles.td} colSpan={4}>Không có dữ liệu</td>
+    </tr>
+  )}
+</tbody>
           </table>
         </div>
       </Card>
