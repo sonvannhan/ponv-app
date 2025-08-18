@@ -1061,9 +1061,9 @@ function formatDate(val) {
            <thead>
   <tr>
     <th style={{ ...styles.thCompact, minWidth: 160 }}>Họ tên</th>
-    <th style={{ ...styles.thCompact, minWidth: 110 }}>Ngày mổ</th>
-    <th style={{ ...styles.thCompact, minWidth: 100 }}>0-6h PONV</th>
-    <th style={{ ...styles.thCompact, minWidth: 100 }}>Hành động</th>
+	<th style={{ ...styles.thCompact, minWidth: 90 }}>Hành động</th>
+    <th style={{ ...styles.thCompact, minWidth: 90 }}>Ngày mổ</th>
+    <th style={{ ...styles.thCompact, minWidth: 50 }}>0-6h PONV</th>    
   </tr>
 </thead>
 <tbody>
@@ -1071,11 +1071,11 @@ function formatDate(val) {
     <tr key={r.id}>
       <td style={styles.td}>{r.name}</td>
       <td style={styles.td}>{r.surgeryDate}</td>
-      <td style={styles.tdCenter}>{deepGet(r, "ponv.p0_6.present") ? "Có" : "Không"}</td>
-      <td style={styles.td}>
+	  <td style={styles.td}>
         <button style={styles.smallBtn} onClick={() => startEdit(r)}>Sửa</button>
         <button style={styles.smallBtnDanger} onClick={() => handleDelete(r.id)}>Xóa</button>
       </td>
+      <td style={styles.tdCenter}>{deepGet(r, "ponv.p0_6.present") ? "Có" : "Không"}</td>      
     </tr>
   ))}
   {filtered.length === 0 && (
