@@ -1102,9 +1102,9 @@ const styles = {
   cardTitle: { fontWeight: 700, marginBottom: 6, paddingLeft: 6, borderLeft: "4px solid #2563eb" },
 
   // compact table (bold borders like PONV)
-  tableCompact: { width: "100%", borderCollapse: "separate", border: "2px solid #cbd5e1", borderSpacing: 0, marginTop: 8 },
+  tableCompact: { width: "100%", borderCollapse: "collapse", border: "2px solid #cbd5e1", borderSpacing: 0, marginTop: 8 },
   thCompact: { textAlign: "left", padding: "6px 8px", background: "#f8fafc", borderRight: "2px solid #cbd5e1", borderBottom: "2px solid #cbd5e1", fontWeight: 600 },
-  td: { padding: "8px 10px", borderRight: "1px solid #e6eef6", borderBottom: "1px solid #e6eef6", minWidth: "120px" },
+  td: { padding: "8px 10px", borderRight: "1px solid #e6eef6", borderBottom: "1px solid #e6eef6", minWidth: "60px" },
   tdLabel: { padding: "6px 8px", borderRight: "1px solid #e6eef6", borderBottom: "1px solid #e6eef6", fontWeight: 500 },
   tdCenter: { padding: "6px 8px", borderRight: "1px solid #e6eef6", borderBottom: "1px solid #e6eef6", textAlign: "center" },
 
