@@ -273,6 +273,7 @@ export default function App() {
   const [editId, setEditId] = useState(null);
 const [importedData, setImportedData] = useState([]);
 const [showPreview, setShowPreview] = useState(false);
+const importInputRef = useRef();
 
   // filters
   const [searchName, setSearchName] = useState("");
@@ -641,6 +642,11 @@ async function saveImportedToFirestore() {
     alert("Lỗi khi lưu dữ liệu từ file.");
   }
 }
+function handleImportClick() {
+  if (importInputRef.current) {
+    importInputRef.current.click(); // Gọi click để mở file picker
+  }
+}
 
 // Hỗ trợ định dạng
 function formatDate(val) {
@@ -680,16 +686,15 @@ function formatDate(val) {
         <button style={styles.button} onClick={exportExcel}>Xuất Excel</button>
         <button style={styles.buttonSecondary} onClick={() => { setForm(clone(DEFAULT_FORM)); setEditId(null); }}>Tạo mới</button>
     
+<button style={styles.buttonSecondary} onClick={handleImportClick}>Import Excel</button>
 <input
   type="file"
   accept=".xlsx,.csv"
   onChange={handleImportFromExcel}
-  id="importFile"
+  ref={importInputRef}
   style={{ display: "none" }}
 />
-<label htmlFor="importFile">
-  <button type="button" style={styles.buttonSecondary}>Import Excel</button>
-</label>
+
 
       </div>
 
