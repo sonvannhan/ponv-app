@@ -811,7 +811,7 @@ function formatDate(val) {
 </Col>
 	<Col>
         <Label>Ghi chú nhịn ăn (nếu có)</Label>
-        <textarea name="MealTimenotes" value={form.MealTimenotes || ""} onChange={handleChange} style={{ ...styles.textarea, minHeight: 24, height: "auto" }} />
+        <textarea name="MealTimenotes" value={form.MealTimenotes || ""} onChange={handleChange} style={{ ...styles.textarea, minHeight: 18, height: "auto" }} />
     </Col>
 <Col>
   <Label>Uống lần đầu (thời gian)</Label>
