@@ -623,6 +623,16 @@ function exportExcel() {
 
       {/* FORM */}
       <form onSubmit={(e) => { e.preventDefault(); handleSave(e); }} style={styles.form}>
+	<div style={{ display: "flex", gap: 8 }}>
+    <button type="button" style={styles.button} onClick={handleSave}>
+      {editId ? "Cập nhật" : "Lưu"}
+    </button>
+    <button type="button" style={styles.buttonSecondary}
+		onClick={() => {setForm(clone(DEFAULT_FORM)); setEditId(null);
+        window.scrollTo({ top: 0, behavior: "smooth" }); }}>
+      Reset
+    </button>
+  </div>
         {/* Patient info */}
         {/* Patient info */}       
 		<Card title="Thông tin bệnh nhân">
