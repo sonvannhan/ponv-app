@@ -474,6 +474,7 @@ function exportExcel() {
 		"Tổng Liều Fresofol (mg)",
 		"Tổng Liều Rocuronium (mg)",
 		"Tổng Liều Sevorane",
+    "Tổng thời gian PT (phút)",
       "Máu mất trong mổ (ml)",
       "Dịch truyền trong mổ (ml)",
       "Số DL màng phổi",
@@ -564,6 +565,8 @@ function exportExcel() {
 		"Tổng Liều Fresofol (mg)": r.op?.FresofolDoseMg || "",
 		"Tổng Liều Rocuronium (mg)": r.op?.RocuroniumDoseMg || "",
 		"Tổng Liều Sevorane": r.op?.SevoraneDose || "",
+  
+    "Tổng thời gian PT (phút)": r.optotaltime || "",
       "Máu mất trong mổ (ml)": r.bloodLossMl || "",
       "Dịch truyền trong mổ (ml)": r.fluidsMl || "",
       "Số DL màng phổi": r.chestDrainCount || "",
@@ -820,6 +823,10 @@ function exportExcel() {
 		
 			</Row>
 			<Row>
+        <Col>
+              <Label>Tổng thời gian PT (phút)</Label>
+              <Input name="optotaltime" type="number" value={form.optotaltime || ""} onChange={handleChange} />
+            </Col>
             <Col>
               <Label>Máu mất trong mổ (ml)</Label>
               <Input name="bloodLossMl" type="number" value={form.bloodLossMl || ""} onChange={handleChange} />
