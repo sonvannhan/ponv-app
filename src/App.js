@@ -57,6 +57,7 @@ const DEFAULT_FORM = {
   bloodLossMl: "",
   fluidsMl: "",
   lastMealTime: "",
+  MealTimenotes: "",
   firstDrinkTime: "",
   chestDrainCount: "",
 
@@ -810,7 +811,7 @@ function formatDate(val) {
 </Col>
 	<Col>
         <Label>Ghi chú nhịn ăn (nếu có)</Label>
-        <textarea name="MealTimenotes" value={form.MealTimenotes || ""} onChange={handleChange} style={{ ...styles.textarea, minHeight: 36, height: "auto" }} />
+        <textarea name="MealTimenotes" value={form.MealTimenotes || ""} onChange={handleChange} style={{ ...styles.textarea, minHeight: 24, height: "auto" }} />
     </Col>
 <Col>
   <Label>Uống lần đầu (thời gian)</Label>
@@ -1096,7 +1097,7 @@ const styles = {
   smallBtnDanger: { padding: "6px 8px", background: "#ef4444", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer" },
 
   input: { width: "100%", padding: "8px 10px", borderRadius: 8, border: "1px solid #d1d5db", boxSizing: "border-box" },
-  textarea: { width: "100%", padding: 6, borderRadius: 8, border: "1px solid #d1d5db", minHeight: 50 },
+  textarea: { width: "100%", padding: 6, borderRadius: 8, border: "1px solid #d1d5db", minHeight: 24 },
 
   card: { background: "#fff", border: "1px solid #e6eef6", borderRadius: 10, padding: 10, marginBottom: 10 },
   cardTitle: { fontWeight: 700, marginBottom: 6, paddingLeft: 6, borderLeft: "4px solid #2563eb" },
