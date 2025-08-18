@@ -1097,7 +1097,7 @@ const styles = {
 
   input: { width: "100%", padding: "8px 10px", borderRadius: 8, border: "1px solid #d1d5db", boxSizing: "border-box" },
   textarea: { width: "100%", padding: 6, borderRadius: 8, border: "1px solid #d1d5db", minHeight: 50 },
-inputGroup: {  display: "flex",  flexDirection: "column",  gap: 4,  marginBottom: 8},
+
   card: { background: "#fff", border: "1px solid #e6eef6", borderRadius: 10, padding: 10, marginBottom: 10 },
   cardTitle: { fontWeight: 700, marginBottom: 6, paddingLeft: 6, borderLeft: "4px solid #2563eb" },
 
@@ -1108,7 +1108,7 @@ inputGroup: {  display: "flex",  flexDirection: "column",  gap: 4,  marginBottom
   tdLabel: { padding: "6px 8px", borderRight: "1px solid #e6eef6", borderBottom: "1px solid #e6eef6", fontWeight: 500 },
   tdCenter: { padding: "6px 8px", borderRight: "1px solid #e6eef6", borderBottom: "1px solid #e6eef6", textAlign: "center" },
 
-  form: { display: "grid", gap: 8 ,gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))" },
+  form: { display: "grid", gap: 8 },
   smallLabel: { fontSize: 12, color: "#334155", display: "block", marginBottom: 4 },
 	
 };
