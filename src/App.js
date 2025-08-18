@@ -90,10 +90,11 @@ const DEFAULT_FORM = {
   symptoms: {
     epigastric: { p0_6: false, p7_24: false, day2: false, day3: false },
     headache: { p0_6: false, p7_24: false, day2: false, day3: false },
+	dizzy: { p0_6: false, p7_24: false, day2: false, day3: false },
     retention: { p0_6: false, p7_24: false, day2: false, day3: false },
   },
 
-  // Thuốc theo mốc (liều vasopressor & liều hạ áp)
+  // Thuốc theo mốc (liều vận mạch & liều nicardipin)
   meds: {
     vasopressors: { p0_6: "", p7_24: "", day2: "", day3: "" },
     antihypert: { p0_6: "", p7_24: "", day2: "", day3: "" },
@@ -256,7 +257,7 @@ const Select = ({ options = [], ...props }) => (
 );
 
 const Check = ({ label, ...props }) => (
-  <label style={{ display: "flex", alignItems: "center", gap: 8, padding: 6, borderRadius: 8 }}>
+  <label style={{ display: "flex", alignItems: "center", gap: 6, padding: 6, borderRadius: 8 }}>
     <input type="checkbox" {...props} />
     <span>{label}</span>
   </label>
@@ -489,7 +490,7 @@ function exportExcel() {
       "PONV >24h (Số lần)",
       "PONV >24h (Mức độ)",
 
-      // Symptoms per timepoint (epigastric, headache, retention)
+      // Symptoms per timepoint (epigastric, headache, dizzy, retention)
       "Đau thượng vị 0-6h",
       "Đau thượng vị 7-24h",
       "Đau thượng vị Ngày2",
@@ -499,6 +500,11 @@ function exportExcel() {
       "Đau đầu 7-24h",
       "Đau đầu Ngày2",
       "Đau đầu Ngày3",
+
+	  "Chóng mặt 0-6h",
+      "Chóng mặt 7-24h",
+      "Chóng mặt Ngày2",
+      "Chóng mặt Ngày3",
 
       "Bí tiểu 0-6h",
       "Bí tiểu 7-24h",
@@ -591,6 +597,11 @@ function exportExcel() {
       "Đau đầu Ngày2": r.symptoms?.headache?.day2 ? "Có" : "Không",
       "Đau đầu Ngày3": r.symptoms?.headache?.day3 ? "Có" : "Không",
 
+	  "Chóng mặt 0-6h": r.symptoms?.dizzy?.p0_6 ? "Có" : "Không",
+      "Chóng mặt 7-24h": r.symptoms?.dizzy?.p7_24 ? "Có" : "Không",
+      "Chóng mặt Ngày2": r.symptoms?.dizzy?.day2 ? "Có" : "Không",
+      "Chóng mặt Ngày3": r.symptoms?.dizzy?.day3 ? "Có" : "Không",
+
       "Bí tiểu 0-6h": r.symptoms?.retention?.p0_6 ? "Có" : "Không",
       "Bí tiểu 7-24h": r.symptoms?.retention?.p7_24 ? "Có" : "Không",
       "Bí tiểu Ngày2": r.symptoms?.retention?.day2 ? "Có" : "Không",
@@ -644,7 +655,7 @@ function exportExcel() {
   return (
     <div style={styles.container}>
       <h1 style={styles.title}>Theo dõi Nôn/Buồn nôn sau mổ (PONV)</h1>
-	<h2><i>ĐV HSSM - Khoa GMHS</i></h2>
+	<h2 style={styles.title}><i>ĐV HSSM - Khoa GMHS</i></h2>
 
       {/* Toolbar: search, date range, actions */}
       <div style={styles.toolbar}>
@@ -654,11 +665,11 @@ function exportExcel() {
           onChange={(e) => setSearchName(e.target.value)}
           style={styles.input}
         />
-        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+        <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
           <label style={styles.smallLabel}>Từ</label>
           <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} style={styles.input} />
         </div>
-        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+        <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
           <label style={styles.smallLabel}>Đến</label>
           <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} style={styles.input} />
         </div>
@@ -982,8 +993,9 @@ function exportExcel() {
             <tbody>
               {[
                 { key: "epigastric", label: "Đau thượng vị" },
-                { key: "headache", label: "Đau đầu / Chóng mặt" },
-                { key: "retention", label: "Bí tiểu / Sonde tiểu" },
+                { key: "headache", label: "Đau đầu" },
+				{ key: "dizzy", label: "Chóng mặt" },
+                { key: "retention", label: "Sonde tiểu" },
               ].map(s => (
                 <tr key={s.key}>
                   <td style={styles.tdLabel}>{s.label}</td>
@@ -995,7 +1007,7 @@ function exportExcel() {
               ))}
 
               <tr>
-                <td style={styles.tdLabel}>Liều Vận mạch</td>
+                <td style={styles.tdLabel}>Liều Vận mạch truyền</td>
                 <td style={styles.td}><Input name="meds.vasopressors.p0_6" value={deepGet(form, "meds.vasopressors.p0_6") || ""} onChange={handleChange} /></td>
                 <td style={styles.td}><Input name="meds.vasopressors.p7_24" value={deepGet(form, "meds.vasopressors.p7_24") || ""} onChange={handleChange} /></td>
                 <td style={styles.td}><Input name="meds.vasopressors.day2" value={deepGet(form, "meds.vasopressors.day2") || ""} onChange={handleChange} /></td>
@@ -1003,7 +1015,7 @@ function exportExcel() {
               </tr>
 
               <tr>
-                <td style={styles.tdLabel}>Liều hạ áp</td>
+                <td style={styles.tdLabel}>Liều Nircardipin</td>
                 <td style={styles.td}><Input name="meds.antihypert.p0_6" value={deepGet(form, "meds.antihypert.p0_6") || ""} onChange={handleChange} /></td>
                 <td style={styles.td}><Input name="meds.antihypert.p7_24" value={deepGet(form, "meds.antihypert.p7_24") || ""} onChange={handleChange} /></td>
                 <td style={styles.td}><Input name="meds.antihypert.day2" value={deepGet(form, "meds.antihypert.day2") || ""} onChange={handleChange} /></td>
@@ -1073,12 +1085,12 @@ function exportExcel() {
 /* ================= Styles ================= */
 const styles = {
   container: { padding: 16, maxWidth: 1200, margin: "0 auto", fontFamily: "system-ui, -apple-system, 'Segoe UI', Roboto, Arial" },
-  title: { fontSize: 18, marginBottom: 8 },
-  toolbar: { display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", marginBottom: 12 },
-  button: { padding: "8px 12px", background: "#2563eb", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" },
-  buttonSecondary: { padding: "8px 12px", background: "#e2e8f0", color: "#111827", border: "none", borderRadius: 8, cursor: "pointer" },
-  smallBtn: { padding: "6px 10px", background: "#2563eb", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", marginRight: 6 },
-  smallBtnDanger: { padding: "6px 10px", background: "#ef4444", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer" },
+  title: { fontSize: 16, marginBottom: 4 },
+  toolbar: { display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap", marginBottom: 4 },
+  button: { padding: "6px 10px", background: "#2563eb", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" },
+  buttonSecondary: { padding: "6px 10px", background: "#e2e8f0", color: "#111827", border: "none", borderRadius: 8, cursor: "pointer" },
+  smallBtn: { padding: "6px 8px", background: "#2563eb", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", marginRight: 6 },
+  smallBtnDanger: { padding: "6px 8px", background: "#ef4444", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer" },
 
   input: { width: "100%", padding: "6px 8px", borderRadius: 8, border: "1px solid #d1d5db" },
   textarea: { width: "100%", padding: 6, borderRadius: 8, border: "1px solid #d1d5db", minHeight: 50 },
@@ -1088,12 +1100,12 @@ const styles = {
 
   // compact table (bold borders like PONV)
   tableCompact: { width: "100%", borderCollapse: "collapse", border: "2px solid #cbd5e1", marginTop: 8 },
-  thCompact: { textAlign: "left", padding: "6px 8px", background: "#f8fafc", borderRight: "2px solid #cbd5e1", borderBottom: "2px solid #cbd5e1", fontWeight: 700 },
-  td: { padding: "8px 10px", borderRight: "1px solid #e6eef6", borderBottom: "1px solid #e6eef6" },
-  tdLabel: { padding: "8px 10px", borderRight: "1px solid #e6eef6", borderBottom: "1px solid #e6eef6", fontWeight: 600 },
-  tdCenter: { padding: "8px 10px", borderRight: "1px solid #e6eef6", borderBottom: "1px solid #e6eef6", textAlign: "center" },
+  thCompact: { textAlign: "left", padding: "6px 8px", background: "#f8fafc", borderRight: "2px solid #cbd5e1", borderBottom: "2px solid #cbd5e1", fontWeight: 600 },
+  td: { padding: "6px 8px", borderRight: "1px solid #e6eef6", borderBottom: "1px solid #e6eef6" },
+  tdLabel: { padding: "6px 8px", borderRight: "1px solid #e6eef6", borderBottom: "1px solid #e6eef6", fontWeight: 500 },
+  tdCenter: { padding: "6px 8px", borderRight: "1px solid #e6eef6", borderBottom: "1px solid #e6eef6", textAlign: "center" },
 
-  form: { display: "grid", gap: 8 },
+  form: { display: "grid", gap: 6 },
   smallLabel: { fontSize: 12, color: "#334155", display: "block", marginBottom: 4 },
 };
 
