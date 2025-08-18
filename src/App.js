@@ -1080,20 +1080,20 @@ const styles = {
   smallBtn: { padding: "6px 10px", background: "#2563eb", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", marginRight: 6 },
   smallBtnDanger: { padding: "6px 10px", background: "#ef4444", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer" },
 
-  input: { width: "100%", padding: "8px 10px", borderRadius: 8, border: "1px solid #d1d5db" },
-  textarea: { width: "100%", padding: 8, borderRadius: 8, border: "1px solid #d1d5db", minHeight: 80 },
+  input: { width: "100%", padding: "6px 8px", borderRadius: 8, border: "1px solid #d1d5db" },
+  textarea: { width: "100%", padding: 6, borderRadius: 8, border: "1px solid #d1d5db", minHeight: 50 },
 
-  card: { background: "#fff", border: "1px solid #e6eef6", borderRadius: 10, padding: 12, marginBottom: 12 },
-  cardTitle: { fontWeight: 700, marginBottom: 8, paddingLeft: 8, borderLeft: "4px solid #2563eb" },
+  card: { background: "#fff", border: "1px solid #e6eef6", borderRadius: 10, padding: 10, marginBottom: 10 },
+  cardTitle: { fontWeight: 700, marginBottom: 6, paddingLeft: 6, borderLeft: "4px solid #2563eb" },
 
   // compact table (bold borders like PONV)
   tableCompact: { width: "100%", borderCollapse: "collapse", border: "2px solid #cbd5e1", marginTop: 8 },
-  thCompact: { textAlign: "left", padding: "8px 10px", background: "#f8fafc", borderRight: "2px solid #cbd5e1", borderBottom: "2px solid #cbd5e1", fontWeight: 700 },
+  thCompact: { textAlign: "left", padding: "6px 8px", background: "#f8fafc", borderRight: "2px solid #cbd5e1", borderBottom: "2px solid #cbd5e1", fontWeight: 700 },
   td: { padding: "8px 10px", borderRight: "1px solid #e6eef6", borderBottom: "1px solid #e6eef6" },
   tdLabel: { padding: "8px 10px", borderRight: "1px solid #e6eef6", borderBottom: "1px solid #e6eef6", fontWeight: 600 },
   tdCenter: { padding: "8px 10px", borderRight: "1px solid #e6eef6", borderBottom: "1px solid #e6eef6", textAlign: "center" },
 
-  form: { display: "grid", gap: 12 },
+  form: { display: "grid", gap: 8 },
   smallLabel: { fontSize: 12, color: "#334155", display: "block", marginBottom: 4 },
 };
 
