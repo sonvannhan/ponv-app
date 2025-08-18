@@ -269,6 +269,8 @@ export default function App() {
   const [form, setForm] = useState(clone(DEFAULT_FORM));
   const [records, setRecords] = useState([]);
   const [editId, setEditId] = useState(null);
+const [importedData, setImportedData] = useState([]);
+const [showPreview, setShowPreview] = useState(false);
 
   // filters
   const [searchName, setSearchName] = useState("");
@@ -423,6 +425,26 @@ function handleImportFromExcel(e) {
     setShowPreview(true);
   };
   reader.readAsArrayBuffer(file);
+}
+
+async function saveImportedToFirestore() {
+  try {
+    for (const row of importedData) {
+      const fullRecord = mergeDefaults({
+        ...row,
+        timeSaved: new Date().toISOString(),
+      });
+      await addDoc(colRef, fullRecord);
+    }
+
+    alert(`Đã lưu ${importedData.length} dòng vào Firestore.`);
+    setImportedData([]);
+    setShowPreview(false);
+    await loadRecords();
+  } catch (err) {
+    console.error("Lỗi khi lưu import:", err);
+    alert("Lỗi khi lưu dữ liệu từ file.");
+  }
 }
 
 // Hỗ trợ định dạng
@@ -670,6 +692,39 @@ function exportExcel() {
       <form onSubmit={(e) => { e.preventDefault(); handleSave(e); }} style={styles.form}>
         {/* Patient info */}
         {/* Patient info */}
+        {showPreview && importedData.length > 0 && (
+  <Card title={`Preview ${importedData.length} dòng từ Excel`}>
+    <table style={styles.tableCompact}>
+      <thead>
+        <tr>
+          <th style={styles.thCompact}>Họ tên</th>
+          <th style={styles.thCompact}>Tuổi</th>
+          <th style={styles.thCompact}>Ngày mổ</th>
+          <th style={styles.thCompact}>Giờ mổ</th>
+          <th style={styles.thCompact}>Chẩn đoán</th>
+          <th style={styles.thCompact}>Phẫu thuật</th>
+        </tr>
+      </thead>
+      <tbody>
+        {importedData.map((row, idx) => (
+          <tr key={idx}>
+            <td style={styles.td}>{row.name}</td>
+            <td style={styles.td}>{row.age}</td>
+            <td style={styles.td}>{row.surgeryDate}</td>
+            <td style={styles.td}>{row.surgeryTime}</td>
+            <td style={styles.td}>{row.diagnosis}</td>
+            <td style={styles.td}>{row.procedure}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+
+    <div style={{ marginTop: 10 }}>
+      <button style={styles.button} onClick={saveImportedToFirestore}>Lưu vào Firestore</button>
+      <button style={styles.buttonSecondary} onClick={() => { setImportedData([]); setShowPreview(false); }}>Hủy</button>
+    </div>
+  </Card>
+)}
 		<Card title="Thông tin bệnh nhân">
 		  <Row>
 		    <Col>
