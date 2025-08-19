@@ -947,7 +947,7 @@ function exportExcel() {
       </form> 
       
       {/* Toolbar: search, date range, actions */}
-      <div style={styles.toolbar}>
+      <div ref={searchRef} style={styles.toolbar}>
         <input
           placeholder="Tìm bệnh nhân..."
           value={searchName}
