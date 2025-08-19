@@ -268,6 +268,7 @@ const Check = ({ label, ...props }) => (
 export default function App() {
   const colRef = useMemo(() => collection(db, "ponv_records"), []);
 
+  const searchRef = useRef();
   const [form, setForm] = useState(clone(DEFAULT_FORM));
   const [records, setRecords] = useState([]);
   const [editId, setEditId] = useState(null);
@@ -599,28 +600,7 @@ function exportExcel() {
       <h1 style={styles.title}>Theo dõi Nôn/Buồn nôn sau mổ (PONV)</h1>
 	<h2 style={styles.title}><i>ĐV HSSM - Khoa GMHS</i></h2>
 
-      {/* Toolbar: search, date range, actions */}
-      <div style={styles.toolbar}>
-        <input
-          placeholder="Tìm bệnh nhân..."
-          value={searchName}
-          onChange={(e) => setSearchName(e.target.value)}
-          style={styles.input}
-        />
-        <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-          <label style={styles.smallLabel}>Từ</label>
-          <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} style={styles.input} />
-        </div>
-        <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-          <label style={styles.smallLabel}>Đến</label>
-          <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} style={styles.input} />
-        </div>
-
-        <button style={styles.buttonSecondary} onClick={clearFilters}>Xóa lọc</button>
-        <button style={styles.button} onClick={exportExcel}>Xuất Excel</button>
-        <button style={styles.buttonSecondary} onClick={() => { setForm(clone(DEFAULT_FORM)); setEditId(null); }}>Tạo mới</button>
-      </div>
-
+      
       {/* FORM */}
       <form onSubmit={(e) => { e.preventDefault(); handleSave(e); }} style={styles.form}>
 	<div style={{ display: "flex", gap: 8 }}>
@@ -633,6 +613,20 @@ function exportExcel() {
       Reset
     </button>
   </div>
+  
+  <div>
+  <button
+    style={styles.buttonSecondary}
+    type="button"
+    onClick={() => {
+      if (searchRef.current) {
+        searchRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+    }}
+  >
+    🔍 Tìm kiếm
+  </button>
+</div>
         {/* Patient info */}
         {/* Patient info */}       
 		<Card title="Thông tin bệnh nhân">
@@ -951,6 +945,29 @@ function exportExcel() {
           <button type="button" style={styles.buttonSecondary} onClick={() => { setForm(clone(DEFAULT_FORM)); setEditId(null); }}>Reset</button>
         </div>
       </form> 
+      
+      {/* Toolbar: search, date range, actions */}
+      <div style={styles.toolbar}>
+        <input
+          placeholder="Tìm bệnh nhân..."
+          value={searchName}
+          onChange={(e) => setSearchName(e.target.value)}
+          style={styles.input}
+        />
+        <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+          <label style={styles.smallLabel}>Từ</label>
+          <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} style={styles.input} />
+        </div>
+        <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+          <label style={styles.smallLabel}>Đến</label>
+          <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} style={styles.input} />
+        </div>
+
+        <button style={styles.buttonSecondary} onClick={clearFilters}>Xóa lọc</button>
+        <button style={styles.button} onClick={exportExcel}>Xuất Excel</button>
+        <button style={styles.buttonSecondary} onClick={() => { setForm(clone(DEFAULT_FORM)); setEditId(null); }}>Tạo mới</button>
+      </div>
+
 	{/* Records table */}
       <Card title={`Danh sách bệnh nhân (${filtered.length})`}>
         <div style={{ overflowX: "auto" }}>
