@@ -273,7 +273,7 @@ export default function App() {
   const [records, setRecords] = useState([]);
   const [editId, setEditId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-const pageSize = 20; // Có thể đổi thành 20 nếu bạn muốn
+const [pageSize, setPageSize] = useState(20); // Có thể đổi thành 20 nếu bạn muốn
 
   // filters
   const [searchName, setSearchName] = useState("");
