@@ -272,6 +272,8 @@ export default function App() {
   const [form, setForm] = useState(clone(DEFAULT_FORM));
   const [records, setRecords] = useState([]);
   const [editId, setEditId] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+const pageSize = 20; // Có thể đổi thành 20 nếu bạn muốn
 
   // filters
   const [searchName, setSearchName] = useState("");
@@ -282,6 +284,10 @@ export default function App() {
     loadRecords();
     // eslint-disable-next-line
   }, []);
+  
+  useEffect(() => {
+  setCurrentPage(1);
+}, [searchName, dateFrom, dateTo]);
 
   async function loadRecords() {
     try {
@@ -388,6 +394,8 @@ export default function App() {
     if (dateTo) toOk = !!r.surgeryDate && r.surgeryDate <= dateTo;
     return nameOk && fromOk && toOk;
   });
+  const totalPages = Math.ceil(filtered.length / pageSize);
+const currentPageRecords = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
 // export to excel, flatten rows
 function exportExcel() {
@@ -981,7 +989,7 @@ function exportExcel() {
   </tr>
 </thead>
 <tbody>
-  {filtered.map((r) => (
+  {currentPageRecords.map((r) => (
     <tr key={r.id}>
       <td style={styles.td}>{r.name}</td>      
 	  <td style={styles.td}>
@@ -1001,6 +1009,51 @@ function exportExcel() {
   )}
 </tbody>
           </table>
+          
+<div style={{ marginTop: 10, display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
+  {/* Dropdown chọn số dòng mỗi trang */}
+  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+    <label style={{ fontSize: 14 }}>Hiển thị mỗi trang:</label>
+    <select value={pageSize} onChange={(e) => setPageSize(Number(e.target.value))} style={{ padding: 6, borderRadius: 6 }}>
+      <option value={10}>10</option>
+      <option value={20}>20</option>
+      <option value={50}>50</option>
+    </select>
+  </div>
+
+  {/* Nút chuyển trang & Nhập số trang */}
+  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+    <button
+      onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+      disabled={currentPage === 1}
+      style={{ padding: "6px 10px", borderRadius: 6 }}
+    >
+      ◀ Trước
+    </button>
+
+    <span>Trang {currentPage} / {totalPages}</span>
+
+    <button
+      onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+      disabled={currentPage === totalPages}
+      style={{ padding: "6px 10px", borderRadius: 6 }}
+    >
+      Sau ▶
+    </button>
+
+    <input
+      type="number"
+      min={1}
+      max={totalPages}
+      value={currentPage}
+      onChange={(e) => {
+        const val = Math.max(1, Math.min(totalPages, Number(e.target.value)));
+        setCurrentPage(val);
+      }}
+      style={{ width: 60, padding: "4px 8px", borderRadius: 6 }}
+    />
+  </div>
+</div>
         </div>
       </Card>
     </div>
