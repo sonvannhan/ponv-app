@@ -3,7 +3,7 @@
 // Dependencies: firebase, xlsx
 // npm install firebase xlsx
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import { initializeApp } from "firebase/app";
 import {
   getFirestore,
@@ -600,7 +600,19 @@ function exportExcel() {
       <h1 style={styles.title}>Theo dõi Nôn/Buồn nôn sau mổ (PONV)</h1>
 	<h2 style={styles.title}><i>ĐV HSSM - Khoa GMHS</i></h2>
 
-      
+      <div>
+  <button
+    style={styles.buttonSecondary}
+    type="button"
+    onClick={() => {
+      if (searchRef.current) {
+        searchRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+    }}
+  >
+    🔍 Tìm kiếm
+  </button>
+</div>
       {/* FORM */}
       <form onSubmit={(e) => { e.preventDefault(); handleSave(e); }} style={styles.form}>
 	<div style={{ display: "flex", gap: 8 }}>
@@ -614,19 +626,6 @@ function exportExcel() {
     </button>
   </div>
   
-  <div>
-  <button
-    style={styles.buttonSecondary}
-    type="button"
-    onClick={() => {
-      if (searchRef.current) {
-        searchRef.current.scrollIntoView({ behavior: "smooth" });
-      }
-    }}
-  >
-    🔍 Tìm kiếm
-  </button>
-</div>
         {/* Patient info */}
         {/* Patient info */}       
 		<Card title="Thông tin bệnh nhân">
