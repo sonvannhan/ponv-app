@@ -644,11 +644,11 @@ function exportExcel() {
 		    </Col>
 		    <Col>
 		      <Label>Tuổi</Label>
-		      <Input name="age" value={form.age || ""} onChange={handleChange} type="number" />
+		      <Input name="age" value={form.age || ""} onChange={handleChange} type="number" style={styles.smallInput} />
 		    </Col>
 		    <Col>
 		      <Label>Giới tính</Label>
-		      <Select name="gender" value={form.gender || ""} onChange={handleChange} options={["", "Nam", "Nữ"]} />
+		      <Select name="gender" value={form.gender || ""} onChange={handleChange} options={["", "Nam", "Nữ"]} style={styles.smallInput} />
 		    </Col>
 		    <Col>
 		      <Label>Ngày phẫu thuật</Label>
@@ -677,6 +677,7 @@ function exportExcel() {
 		        value={form.surgeryTime || ""}
 		        onChange={handleChange}
 		        onBlur={handleTimeBlur}
+            style={styles.smallInput}
 		      />
 		    </Col>
 		    <Col>
@@ -688,6 +689,7 @@ function exportExcel() {
 		        value={form.pacuOutTime || ""}
 		        onChange={handleChange}
 		        onBlur={handleTimeBlur}
+            style={styles.smallInput}
 		      />
 		    </Col>
 		    <Col>
@@ -699,6 +701,7 @@ function exportExcel() {
 		        value={form.extubationTime || ""}
 		        onChange={handleChange}
 		        onBlur={handleTimeBlur}
+            style={styles.smallInput}
 		      />
 		    </Col>
 		  </Row>
@@ -723,24 +726,24 @@ function exportExcel() {
         {/* Intra / Postop */}
         <Card title="Trong mổ-Sau mổ & Giảm đau">
         <Row>
-		<Col><Label>Tổng Liều Fentanyl (mcg)</Label><Input name="op.FentanylDoseMcg" type="number" value={deepGet(form, "op.FentanylDoseMcg") || ""} onChange={handleChange} /></Col>
-		<Col><Label>Tổng Liều Fresofol (mg)</Label><Input name="op.FresofolDoseMg" type="number" value={deepGet(form, "op.FresofolDoseMg") || ""} onChange={handleChange} /></Col>
-		<Col><Label>Tổng Liều Rocuronium (mg)</Label><Input name="op.RocuroniumDoseMg" type="number" value={deepGet(form, "op.RocuroniumDoseMg") || ""} onChange={handleChange} /></Col>
-		<Col><Label>Tổng Liều Sevorane </Label><Input name="op.SevoraneDose" type="number" value={deepGet(form, "op.SevoraneDose") || ""} onChange={handleChange} /></Col>
+		<Col><Label>Tổng Liều Fentanyl (mcg)</Label><Input name="op.FentanylDoseMcg" type="number" value={deepGet(form, "op.FentanylDoseMcg") || ""} onChange={handleChange} style={styles.smallInput} /></Col>
+		<Col><Label>Tổng Liều Fresofol (mg)</Label><Input name="op.FresofolDoseMg" type="number" value={deepGet(form, "op.FresofolDoseMg") || ""} onChange={handleChange} style={styles.smallInput} /></Col>
+		<Col><Label>Tổng Liều Rocuronium (mg)</Label><Input name="op.RocuroniumDoseMg" type="number" value={deepGet(form, "op.RocuroniumDoseMg") || ""} onChange={handleChange} style={styles.smallInput} /></Col>
+		<Col><Label>Tổng Liều Sevorane </Label><Input name="op.SevoraneDose" type="number" value={deepGet(form, "op.SevoraneDose") || ""} onChange={handleChange} style={styles.smallInput} /></Col>
 		
 			</Row>
 			<Row>
         <Col>
               <Label>Tổng thời gian PT (phút)</Label>
-              <Input name="optotaltime" type="number" value={form.optotaltime || ""} onChange={handleChange} />
+              <Input name="optotaltime" type="number" value={form.optotaltime || ""} onChange={handleChange} style={styles.smallInput} />
             </Col>
             <Col>
               <Label>Máu mất trong mổ (ml)</Label>
-              <Input name="bloodLossMl" type="number" value={form.bloodLossMl || ""} onChange={handleChange} />
+              <Input name="bloodLossMl" type="number" style={styles.smallInput} value={form.bloodLossMl || ""} onChange={handleChange} />
             </Col>
             <Col>
               <Label>Dịch truyền trong mổ (ml)</Label>
-              <Input name="fluidsMl" type="number" value={form.fluidsMl || ""} onChange={handleChange} />
+              <Input name="fluidsMl" type="number" style={styles.smallInput} value={form.fluidsMl || ""} onChange={handleChange} />
             </Col>
 			</Row>
 			<Row>
@@ -1085,6 +1088,6 @@ const styles = {
 
   form: { display: "grid", gap: 8 },
   smallLabel: { fontSize: 12, color: "#334155", display: "block", marginBottom: 4 },
-	
+	smallInput: { width: "100px", padding: "6px 8px",borderRadius: 8,border: "1px solid #d1d5db",boxSizing: "border-box" },
 };
 
